@@ -28,7 +28,15 @@ To configure the mysql database, create a `.env` file with the following content
     DB_NAME=XXXXXXXXXX
 ```
 
-The scraper can run mutiple scraper instances, and every time one of the scrapers collects information about a city, the id of city will be stored in the file `cached.json`. That way, the other scrapers can skip the cities that have already been scraped.
+Since it uses selenium, you need to install the driver for your browser. To do that, you can follow the instructions on the [Selenium documentation](https://selenium-python.readthedocs.io/installation.html#drivers).
+The script is using `Chrome`, but you can use any other browser by changing the driver at line:
+
+```
+112 self.driver = webdriver.Chrome()
+```
+
+The scraper can run mutiple scraper instances, and every time one of the scrapers collects information about a city, the id of city will be stored in the file `cached.json`.
+That way, the other scrapers can skip the cities that have already been scraped.
 
 Whenever an instance crashes for whatever reason, it will be restarted automatically.
 
