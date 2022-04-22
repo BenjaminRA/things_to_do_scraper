@@ -28,6 +28,8 @@ To configure the mysql database, create a `.env` file with the following content
     DB_NAME=XXXXXXXXXX
 ```
 
+## Scrape Atractions
+
 Since it uses selenium, you need to install the driver for your browser. To do that, you can follow the instructions on the [Selenium documentation](https://selenium-python.readthedocs.io/installation.html#drivers).
 The script is using `Chrome`, but you can use any other browser by changing the driver at line:
 
@@ -48,3 +50,18 @@ To run the scraper, run the following command:
 
 Where thread_count is the number of threads (instances) that will be used to scrape the data.
 When no thread_count is specified, the default value is 1.
+
+`main.py` will get the name of all the atractions in a city, and store them in the database table called `places`.
+
+## Scrape atractions information
+
+To run the scraper, run the following command:
+
+```
+    python maps_scraper.py {thread_count}
+```
+
+Where thread_count is the number of threads (instances) that will be used to scrape the data.
+When no thread_count is specified, the default value is 1.
+
+`maps_scraper.py` will get the info of all the atractions scraped by `main.py`, and store them in the database table called `places`, in the column `info` as a RAW JSON.
