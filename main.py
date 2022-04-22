@@ -15,21 +15,6 @@ import mysql.connector
 import threading
 load_dotenv()
 
-if not os.path.exists('cached.json'):
-    open('cached.json', 'w', encoding='utf-8').write('{}')
-
-cached = json.loads(open('cached.json', 'r', encoding='utf-8').read())
-cached_mutex = threading.Lock()
-
-
-def add_cached(key):
-    cached_mutex.acquire()
-    cached[key] = True
-    with open('cached.json', 'w', encoding='utf-8') as f:
-        json.dump(cached, f, ensure_ascii=False, indent=4)
-        cached_mutex.release()
-
-
 thread_count = 1
 
 if (len(sys.argv) > 1):
@@ -66,7 +51,7 @@ for i in range(len(paises)):
     departamentos = cursor.fetchall()
     for j in range(len(departamentos)):
         cursor.execute(
-            f"select * from ciudades c where c.departamentos_iddepartamento = {departamentos[j]['iddepartamento']}")
+            f"select * from ciudades c where c.departamentos_iddepartamento = {departamentos[j]['iddepartamento']} and c.idciudad not in (select idciudad from cache)")
         ciudades = cursor.fetchall()
         random.shuffle(ciudades)
         departamentos[j]['ciudades'] = ciudades
@@ -75,6 +60,17 @@ for i in range(len(paises)):
     paises[i]['departamentos'] = departamentos
 
 random.shuffle(paises)
+
+
+def check_if_cached(cursor, idciudad):
+    cursor.execute(f"SELECT * FROM cache WHERE idciudad = {idciudad}")
+    exists = cursor.fetchall()
+    return len(exists) > 0
+
+
+def add_cached(mydb, cursor, idciudad):
+    cursor.execute(f"INSERT INTO cache(idciudad) VALUES ({idciudad})")
+    mydb.commit()
 
 
 def shuffle_paises():
@@ -118,11 +114,7 @@ class ScrapingThread(threading.Thread):
                     print(
                         f"{pais['nombre_pais']} - {departamento['nombre_departamento']} - {ciudad['nombre_ciudad']}")
 
-                    cached_mutex.acquire()
-                    in_cached = str(ciudad['idciudad']) in cached
-                    cached_mutex.release()
-
-                    if (in_cached):
+                    if (check_if_cached(self.cursor, ciudad['idciudad'])):
                         print('City already cached')
                         continue
 
@@ -199,7 +191,7 @@ class ScrapingThread(threading.Thread):
                             print(
                                 f"{ciudad['nombre_ciudad']} -> {self.cursor.rowcount} places inserted")
 
-                    add_cached(ciudad['idciudad'])
+                    add_cached(self.mydb, self.cursor, ciudad['idciudad'])
 
         self.done = True
         self.driver.close()

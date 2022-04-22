@@ -39,3 +39,8 @@ CREATE TABLE `places` (
     KEY `fk_places_ciudades1_idx` (`ciudades_idciudad`),
     CONSTRAINT `fk_places_ciudades1` FOREIGN KEY (`ciudades_idciudad`) REFERENCES `ciudades` (`idciudad`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `cache` (
+    `idciudad` int(11) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`idciudad`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
