@@ -42,7 +42,7 @@ That way, the other scrapers can skip the cities that have already been scraped.
 
 Whenever an instance crashes for whatever reason, it will be restarted automatically.
 
-To run the scraper, run the following command:
+To run the scraper, execute the following command:
 
 ```
     python main.py {thread_count}
@@ -55,7 +55,7 @@ When no thread_count is specified, the default value is 1.
 
 ## Scrape atractions information
 
-To run the scraper, run the following command:
+To run the scraper, execute the following command:
 
 ```
     python maps_scraper.py {thread_count}
