@@ -293,7 +293,7 @@ class MapsScraper():
             # traceback.print_exc()
 
     def get_reviews(self, lang):
-        changed_page = False
+        # changed_page = False
         try:
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'button[jsaction="pane.reviewlist.goToReviews"]')))
@@ -315,12 +315,12 @@ class MapsScraper():
 
                 element.click()
 
-                changed_page = True
+                # changed_page = True
 
                 reviews = []
 
                 WebDriverWait(self.driver, 30).until(EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, 'div[class="m6QErb"][jsan="t-dgE5uNmzjiE,7.m6QErb"]')))
+                    (By.CSS_SELECTOR, 'div[class="m6QErb"][jsan="t-dgE5uNmzjiE,7.m6QErb"] .jftiEf.L6Bbsd')))
 
                 review_elements = self.driver.find_elements(
                     By.CSS_SELECTOR, 'div[class="m6QErb"][jsan="t-dgE5uNmzjiE,7.m6QErb"] .jftiEf.L6Bbsd')
@@ -356,11 +356,11 @@ class MapsScraper():
             # print(e)
             # traceback.print_exc()
 
-        finally:
-            if changed_page:
-                self.driver.back()
-                self.wait_for_element(
-                    'div[class="onegoogle noprint app-sandbar-vasquette"]')
+        # finally:
+        #     if changed_page:
+        #         self.driver.back()
+        #         self.wait_for_element(
+        #             'div[class="onegoogle noprint app-sandbar-vasquette"]')
 
     def scrape(self, driver, place, lang):
         if place['place_id'] is None:
@@ -380,7 +380,7 @@ class MapsScraper():
 
             self.driver.set_page_load_timeout(60)
             self.driver.get(
-                f"https://www.google.com/maps/place/?q=place_id:{place['place_id']}")
+                f"https://www.google.com/maps/place/?q=place_id:{place['place_id']}&hl={'en' if lang == 'en' else 'es-419'}")
 
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, '.lMbq3e')))

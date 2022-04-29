@@ -45,7 +45,7 @@ def init():
     class ScrapingThread():
 
         def __init__(self):
-            self.url = 'https://www.google.com/travel/things-to-do?g2lb=2502548,2503771,2503781,4258168,4270442,4284970,4291517,4306835,4597339,4640247,4649665,4680677,4722435,4722900,4723331,4733969,4734960,4738607,4743123,4746263,4752417&hl=es-419&gl=cl&ssta=1&dest_mid=/m/06hkdl&dest_state_type=main&dest_src=ts&q=google+things+to+do&sa=X&ved=2ahUKEwiiibzp4aH3AhVwGbkGHf-TCccQuL0BegQIAxAa'
+            self.url = 'https://www.google.com/travel/things-to-do?hl=es-419&dest_mid=%2Fm%2F01qgv7'
             self.driver = None
             self.done = False
             self.daemon = True
@@ -61,7 +61,10 @@ def init():
             self.ciudades = []
             self.json_data = {}
 
-        def init_driver(self, language='es'):
+        def get_url(self, lang):
+            return self.url.replace('es-419', 'en' if lang == 'en' else 'es-419')
+
+        def init_driver(self,):
             if self.driver is not None:
                 try:
                     self.driver.close()
@@ -69,9 +72,9 @@ def init():
                     pass
             options = webdriver.ChromeOptions()
             # options.add_argument('window-position=2560,0')
-            options.add_argument('window-position=960,0')
-            options.add_experimental_option(
-                'prefs', {'intl.accept_languages': 'en-GB' if language == 'en' else 'es-ES'})
+            # options.add_argument('window-position=960,0')
+            # options.add_experimental_option(
+            #     'prefs', {'intl.accept_languages': 'en-GB' if language == 'en' else 'es-ES'})
 
             self.driver = webdriver.Chrome(
                 chrome_options=options)
@@ -130,7 +133,7 @@ def init():
 
         def get_ciudades(self):
             self.cursor.execute("""
-                SELECT p.nombre_pais, d.nombre_departamento, c.nombre_ciudad, c.idciudad FROM ciudades c 
+                SELECT p.nombre_pais, d.nombre_departamento, c.nombre_ciudad, c.idciudad, null as dest_mid FROM ciudades c 
                 JOIN departamentos d ON d.iddepartamento = c.departamentos_iddepartamento
                 JOIN paises p ON p.idpais = d.paises_idpais
                 WHERE c.idciudad NOT IN (SELECT idciudad FROM cache) AND p.nombre_pais = 'Chile'
@@ -152,54 +155,64 @@ def init():
                 f"INSERT INTO cache(idciudad) VALUES ({idciudad})")
             self.mydb.commit()
 
-        def search_place(self, ciudad):
-            self.driver.get(self.url)
-            input_ciudad = self.driver.find_element(By.CSS_SELECTOR,
-                                                    'input[jsname="yrriRe"]')
+        def search_place(self, ciudad, lang):
+            if ciudad['dest_mid'] is None:
+                url = self.get_url(lang)
+                self.driver.get(url)
+                input_ciudad = self.driver.find_element(By.CSS_SELECTOR,
+                                                        'input[jsname="yrriRe"]')
 
-            action = ActionChains(self.driver)
+                action = ActionChains(self.driver)
 
-            action.double_click(input_ciudad)
-            for letter in ciudad['nombre_ciudad']:
-                action.send_keys(letter)
-            action.perform()
+                action.double_click(input_ciudad)
+                for letter in ciudad['nombre_ciudad']:
+                    action.send_keys(letter)
+                action.perform()
 
-            WebDriverWait(self.driver, 10).until(
-                element_has_loaded_suggestions())
+                WebDriverWait(self.driver, 10).until(
+                    element_has_loaded_suggestions())
 
-            suggestions = self.driver.find_elements(
-                By.CSS_SELECTOR, 'ul.DFGgtd li')
+                suggestions = self.driver.find_elements(
+                    By.CSS_SELECTOR, 'ul.DFGgtd li')
 
-            match = None
+                match = None
 
-            if len(suggestions) == 0:
-                return False
+                if len(suggestions) == 0:
+                    return False
 
-            for suggestion in suggestions:
-                if ciudad['nombre_departamento'].lower().strip() in suggestion.text.lower().strip():
-                    match = suggestion
-                    break
+                for suggestion in suggestions:
+                    if ciudad['nombre_departamento'].lower().strip() in suggestion.text.lower().strip():
+                        match = suggestion
+                        break
 
-                if ciudad['nombre_pais'].lower().strip() in suggestion.text.lower().strip():
-                    match = suggestion
-                    break
+                    if ciudad['nombre_pais'].lower().strip() in suggestion.text.lower().strip():
+                        match = suggestion
+                        break
 
-            if match is None:
-                return False
+                if match is None:
+                    return False
 
-            match.click()
+                match.click()
 
-            self.driver.execute_script("""
-                var element = document.querySelector(".kQb6Eb");
-                if (element)
-                    element.parentNode.removeChild(element);
-            """)
+                self.driver.execute_script("""
+                    var element = document.querySelector(".kQb6Eb");
+                    if (element)
+                        element.parentNode.removeChild(element);
+                """)
+
+            else:
+                self.driver.get(
+                    f"https://www.google.com/travel/things-to-do?hl={'en' if lang == 'en' else 'es-419'}&dest_mid={ciudad['dest_mid']}")
 
             try:
                 WebDriverWait(self.driver, 5).until(EC.presence_of_element_located(
                     (By.CSS_SELECTOR, '.kQb6Eb')))
             except:
                 return False
+
+            if ciudad['dest_mid'] is None:
+                ciudad['dest_mid'] = self.driver.current_url.split('dest_mid=')[
+                    1].split('&')[0]
 
             self.driver.execute_script("""
                 var element = document.querySelector(".kQb6Eb");
@@ -270,6 +283,7 @@ def init():
 
             self.ciudades = self.get_ciudades()
             self.done = False
+            self.init_driver()
 
             for ciudad in self.ciudades:
                 print(
@@ -288,9 +302,7 @@ def init():
                     if not Found:
                         continue
 
-                    self.init_driver(lang)
-
-                    if not self.search_place(ciudad):
+                    if not self.search_place(ciudad, lang):
                         Found = False
                         continue
 
@@ -342,7 +354,7 @@ def init():
 
                         place_element.click()
 
-                        WebDriverWait(self.driver, 15).until(
+                        WebDriverWait(self.driver, 60).until(
                             EC.presence_of_element_located((By.CSS_SELECTOR, '.U4rdx c-wiz')))
 
                         idx = None
