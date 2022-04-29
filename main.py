@@ -139,15 +139,6 @@ def init():
 
             random.shuffle(ciudades)
 
-            return [
-                {
-                    'nombre_pais': 'Chile',
-                    'nombre_departamento': 'Region Metropolitana',
-                    'nombre_ciudad': 'Puente Alto',
-                    'idciudad': 443134
-                }
-            ]
-
             return ciudades
 
         def check_if_cached(self, idciudad):
