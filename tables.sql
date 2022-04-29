@@ -1,3 +1,9 @@
+DROP TABLE IF EXISTS `cache`;
+DROP TABLE IF EXISTS `places`;
+DROP TABLE IF EXISTS `ciudades`;
+DROP TABLE IF EXISTS `departamentos`;
+DROP TABLE IF EXISTS `paises`;
+
 CREATE TABLE `paises` (
  `idpais` int(11) NOT NULL AUTO_INCREMENT,
  `nombre_pais` varchar(70) NOT NULL,
@@ -31,24 +37,18 @@ CREATE TABLE `ciudades` (
 CREATE TABLE `places` (
     `idplace` int(11) NOT NULL AUTO_INCREMENT,
     `ciudades_idciudad` int(11) NOT NULL,
-    `nombre_place` varchar(255) NOT NULL,
-    `info` JSON DEFAULT NULL,
-    `created_at` timestamp NULL DEFAULT current_timestamp(),
-    PRIMARY KEY (`idplace`,`ciudades_idciudad`),
-    KEY `fk_places_ciudades1_idx` (`ciudades_idciudad`),
-    CONSTRAINT `fk_places_ciudades1` FOREIGN KEY (`ciudades_idciudad`) REFERENCES `ciudades` (`idciudad`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE `places_info` (
-    `idplace_info` int(11) NOT NULL AUTO_INCREMENT,
-    `places_idplace` int(11) NOT NULL,
-    `nombre_es` varchar(255) DEFAULT NULL,
-    `nombre_en` varchar(255) DEFAULT NULL,
+    `data_card_id` varchar(255) DEFAULT NULL, -- id del lugar en la api de google en things to do
+    `place_id` varchar(255) DEFAULT NULL, -- id del lugar en la api de google
+    `nombre_place_es` varchar(255) DEFAULT NULL,
+    `nombre_place_en` varchar(255) DEFAULT NULL,
+    `descripcion_ttt_es` TEXT DEFAULT NULL,
+    `descripcion_ttt_en` TEXT DEFAULT NULL,
     `descripcion_short_es` TEXT DEFAULT NULL,
     `descripcion_short_en` TEXT DEFAULT NULL,
     `descripcion_long_es` TEXT DEFAULT NULL,
     `descripcion_long_en` TEXT DEFAULT NULL,
-    `direccion` varchar(255) DEFAULT NULL,
+    `direccion_es` varchar(255) DEFAULT NULL,
+    `direccion_en` varchar(255) DEFAULT NULL,
     `web` varchar(100) DEFAULT NULL,
     `telefono` varchar(20) DEFAULT NULL,
     `email` varchar(100) DEFAULT NULL,
@@ -62,13 +62,15 @@ CREATE TABLE `places_info` (
     `reviews_es` JSON DEFAULT NULL,
     `reviews_en` JSON DEFAULT NULL,
     `categorias` JSON DEFAULT NULL,
+    `maps_scraped` TINYINT(1) DEFAULT 0,
     `created_at` timestamp NULL DEFAULT current_timestamp(),
     `updated_at` timestamp NULL DEFAULT NULL,
-    PRIMARY KEY (`idplace_info`, `places_idplace`),
-    KEY `fk_places_info_places1_idx` (`places_idplace`),
-    CONSTRAINT `fk_places_info_places1` FOREIGN KEY (`places_idplace`) REFERENCES `places` (`idplace`) ON DELETE NO ACTION ON UPDATE NO ACTION
+    PRIMARY KEY (`idplace`,`ciudades_idciudad`),
+    KEY `fk_places_ciudades1_idx` (`ciudades_idciudad`),
+    CONSTRAINT `fk_places_ciudades1` FOREIGN KEY (`ciudades_idciudad`) REFERENCES `ciudades` (`idciudad`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP TABLE IF EXISTS `cache`;
 CREATE TABLE `cache` (
     `idciudad` int(11) NOT NULL AUTO_INCREMENT,
     `created_at` timestamp NULL DEFAULT current_timestamp(),
