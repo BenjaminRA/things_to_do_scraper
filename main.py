@@ -51,19 +51,20 @@ def elapsed_time(start_time):
     return time.time() - start_time
 
 
-def init():
+def init(idx):
     class element_has_loaded_suggestions(object):
         def __call__(self, driver):
             return len(driver.find_elements(By.CSS_SELECTOR, '.XOeJFd.rHFvzd ul')) > 0 or len(driver.find_elements(By.CSS_SELECTOR, '.XOeJFd.rHFvzd .rZ2Tg')) > 0
 
     class ScrapingThread():
 
-        def __init__(self):
+        def __init__(self, idx):
             self.url = 'https://www.google.com/travel/things-to-do?hl=es-419&dest_mid=%2Fm%2F01qgv7'
             self.driver = None
             self.done = False
             self.daemon = True
             self.client = get_client()
+            self.idx = idx
             self.ciudades = []
             self.json_data = {}
 
@@ -83,7 +84,7 @@ def init():
                 except:
                     pass
             options = webdriver.ChromeOptions()
-            # options.add_argument('window-position=2560,0')
+            options.add_argument(f"window-position={(self.idx)*400},0")
             # options.add_argument('window-position=960,0')
             # options.add_experimental_option(
             #     'prefs', {'intl.accept_languages': 'en-GB' if language == 'en' else 'es-ES'})
@@ -218,7 +219,7 @@ def init():
             """
             Returns True if the attraction has been scraped, False otherwise.
             """
-            return self.client.atracciones.find_one({'atraccion_id': attraction_id})
+            return self.client.atracciones.find_one({'_id': attraction_id})
 
         def set_scraped(self, territory):
             """
@@ -247,6 +248,10 @@ def init():
                 input_ciudad = self.driver.find_element(By.CSS_SELECTOR,
                                                         'input[jsname="yrriRe"]')
 
+                input_ciudad.clear()
+                input_ciudad.send_keys(Keys.CONTROL + "a")
+                input_ciudad.send_keys(Keys.DELETE)
+
                 action = ActionChains(self.driver)
 
                 action.double_click(input_ciudad)
@@ -264,7 +269,7 @@ def init():
                     action.send_keys(letter)
                 action.perform()
 
-                WebDriverWait(self.driver, 10).until(
+                WebDriverWait(self.driver, 30).until(
                     element_has_loaded_suggestions())
 
                 suggestions = self.driver.find_elements(
@@ -607,14 +612,14 @@ def init():
                         except:
                             print(e)
 
-    task = ScrapingThread()
+    task = ScrapingThread(idx)
     task.run()
 
 
 if __name__ == "__main__":
     print('Starting threads')
     for i in range(thread_count):
-        threads.append(Process(target=init))
+        threads.append(Process(target=init, args=(i,)))
         threads[i].start()
 
     while True:

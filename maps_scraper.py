@@ -295,7 +295,7 @@ class MapsScraper():
     def get_reviews(self, lang):
         # changed_page = False
         try:
-            WebDriverWait(self.driver, 10).until(
+            WebDriverWait(self.driver, 30).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'button[jsaction="pane.reviewlist.goToReviews"]')))
 
             element = self.driver.find_elements(
@@ -319,7 +319,7 @@ class MapsScraper():
 
                 reviews = []
 
-                WebDriverWait(self.driver, 30).until(EC.presence_of_element_located(
+                WebDriverWait(self.driver, 60).until(EC.presence_of_element_located(
                     (By.CSS_SELECTOR, 'div[class="m6QErb"][jsan="t-dgE5uNmzjiE,7.m6QErb"] .jftiEf.L6Bbsd')))
 
                 review_elements = self.driver.find_elements(
