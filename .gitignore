@@ -4,3 +4,7 @@ example.json
 example_2.json
 TODO
 requests.txt
+
+__pycache__
+*/__pycache__
+.vscode
