@@ -3,10 +3,12 @@ import time
 import os
 import random
 import sys
+import argparse
 import traceback
 from multiprocessing import Process
 from typing import final
 from dotenv import load_dotenv
+from pymongo import InsertOne, UpdateOne
 from seleniumwire import webdriver
 from seleniumwire.utils import decode
 from selenium.webdriver.common.keys import Keys
@@ -16,23 +18,33 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
 from maps_scraper import MapsScraper
-import mysql.connector
+from db.mongodb import get_client
+from decimal import Decimal
 
-load_dotenv()
+parser = argparse.ArgumentParser()
 
-thread_count = 1
+parser.add_argument('--threads', type=int, default=1,
+                    help='Number of threads to run')
+parser.add_argument('--country', type=str, default='',
+                    help='Country to scrape')
+parser.add_argument('--priority', type=str, default='',
+                    help='Scrape countries with specified priority')
 
-if (len(sys.argv) > 1):
-    try:
-        thread_count = int(sys.argv[1])
-    except:
-        print('Invalid number for thread count')
-        sys.exit(1)
+args = parser.parse_args()
+
+thread_count = args.threads
 
 threads = []
 
+PAIS_TERRITORY = 1
+DEPARTAMENTO_TERRITORY = 2
+CIUDAD_TERRITORY = 3
+
+load_dotenv()
 
 # calculate elapsed time
+
+
 def elapsed_time(start_time):
     return time.time() - start_time
 
@@ -49,22 +61,20 @@ def init():
             self.driver = None
             self.done = False
             self.daemon = True
-            self.mydb = mysql.connector.connect(
-                host=os.getenv('DB_HOST'),
-                user=os.getenv('DB_USER'),
-                password=os.getenv('DB_PASSWORD'),
-                database=os.getenv('DB_NAME'),
-                charset="utf8mb4",
-                collation="utf8mb4_unicode_ci"
-            )
-            self.cursor = self.mydb.cursor(dictionary=True)
+            self.client = get_client()
             self.ciudades = []
             self.json_data = {}
 
         def get_url(self, lang):
+            """
+            The things to do url to scrape for the given language.
+            """
             return self.url.replace('es-419', 'en' if lang == 'en' else 'es-419')
 
-        def init_driver(self,):
+        def init_driver(self):
+            """
+            Initializes the chrome driver.
+            """
             if self.driver is not None:
                 try:
                     self.driver.close()
@@ -79,7 +89,39 @@ def init():
             self.driver = webdriver.Chrome(
                 chrome_options=options)
 
+        def get_territory_type(self, territory):
+            """
+            Returns the territory type:
+            CIUDAD_TERRITORY, DEPARTAMENTO_TERRITORY or PAIS_TERRITORY
+            """
+            if 'ciudad_id' in territory:
+                return CIUDAD_TERRITORY
+
+            elif 'departamento_id' in territory and 'ciudad_id' not in territory:
+                return DEPARTAMENTO_TERRITORY
+
+            else:
+                return PAIS_TERRITORY
+
+        def get_territory_name(self, territory):
+            """
+            Returns the territory name, given the territory type.
+            """
+            if territory['type'] == CIUDAD_TERRITORY:
+                return f"{territory['ciudad_nombre']} ({territory['departamento_nombre']}) ({territory['pais_nombre']})"
+
+            elif territory['type'] == DEPARTAMENTO_TERRITORY:
+                return f"{territory['departamento_nombre']} ({territory['pais_nombre']})"
+
+            else:
+                return territory['pais_nombre']
+
         def get_place_id(self, nombre_place):
+            """
+            Returns the place id given the place name.
+            It looks through the network requests to find where google fetches the place info,
+            then it parses the response to get the place id.
+            """
             try:
                 for request in self.driver.requests:
                     if request.response and 'batchexecute' in request.url:
@@ -102,70 +144,121 @@ def init():
                 # traceback.print_exc()
                 return None
 
-        def get_json(self):
-            self.json_data = {}
-            try:
-                for request in self.driver.requests:
-                    if request.response and 'google.com/search?' in request.url:
-                        body = decode(request.response.body, request.response.headers.get(
-                            'Content-Encoding', 'identity'))
-                        body = (body.decode('utf-8').split("\")]}'\\n")
-                                [1].split(']","e')[0] + ']') \
-                            .replace('\\/', '/') \
-                            .replace('\\\\\\"', '') \
-                            .replace('\\"', '"') \
-                            .replace('\\', '') \
-                            .replace("\\xa0", " ") \
+        # def get_json(self):
+        #     self.json_data = {}
+        #     try:
+        #         for request in self.driver.requests:
+        #             if request.response and 'google.com/search?' in request.url:
+        #                 body = decode(request.response.body, request.response.headers.get(
+        #                     'Content-Encoding', 'identity'))
+        #                 body = (body.decode('utf-8').split("\")]}'\\n")
+        #                         [1].split(']","e')[0] + ']') \
+        #                     .replace('\\/', '/') \
+        #                     .replace('\\\\\\"', '') \
+        #                     .replace('\\"', '"') \
+        #                     .replace('\\', '') \
+        #                     .replace("\\xa0", " ") \
 
-                        self.json_data = json.loads(body)[0][1][0][14]
+        #                 self.json_data = json.loads(body)[0][1][0][14]
 
-                    if request.response and 'google.com/maps/preview/place' in request.url:
-                        body = decode(request.response.body, request.response.headers.get(
-                            'Content-Encoding', 'identity'))
+        #             if request.response and 'google.com/maps/preview/place' in request.url:
+        #                 body = decode(request.response.body, request.response.headers.get(
+        #                     'Content-Encoding', 'identity'))
 
-                        body = body.decode('utf-8')[5:]
+        #                 body = body.decode('utf-8')[5:]
 
-                        self.json_data = json.loads(body)[6]
+        #                 self.json_data = json.loads(body)[6]
 
-            except Exception as e:
-                print(e)
-                traceback.print_exc()
+        #     except Exception as e:
+        #         print(e)
+        #         traceback.print_exc()
 
-        def get_ciudades(self):
-            self.cursor.execute("""
-                SELECT p.nombre_pais, d.nombre_departamento, c.nombre_ciudad, c.idciudad, null as dest_mid FROM ciudades c 
-                JOIN departamentos d ON d.iddepartamento = c.departamentos_iddepartamento
-                JOIN paises p ON p.idpais = d.paises_idpais
-                WHERE c.idciudad NOT IN (SELECT idciudad FROM cache) AND p.nombre_pais = 'Chile'
-            """)
-            ciudades = self.cursor.fetchall()
+        def get_places_to_scrape(self):
+            """
+            Returns the places to scrape from the mongoDB database,
+            given the language and the priority provided by the user in the command line.
+            """
+            query = {'scraped': False}
+
+            if args.country != '':
+                query['pais_nombre'] = args.country
+
+            if args.priority != '':
+                query['priority'] = int(args.priority)
+
+            ciudades = list(self.client.ciudades.find(
+                query).sort('priority', 1).limit(100))
+            departamentos = list(self.client.departamentos.find(
+                query).sort('priority', 1).limit(100))
+            paises = list(self.client.paises.find(
+                query).sort('priority', 1).limit(100))
 
             random.shuffle(ciudades)
+            random.shuffle(departamentos)
+            random.shuffle(paises)
 
-            return ciudades
+            return ciudades + departamentos + paises
 
-        def check_if_cached(self, idciudad):
-            self.cursor.execute(
-                f"SELECT * FROM cache WHERE idciudad = {idciudad}")
-            exists = self.cursor.fetchall()
-            return len(exists) > 0
+        def check_territory_scraped(self, territory):
+            """
+            Returns True if the territory has been scraped, False otherwise.
+            """
+            if territory['type'] == CIUDAD_TERRITORY:
+                return self.client.ciudades.find_one({'ciudad_id': territory['ciudad_id']})['scraped']
 
-        def add_cached(self, idciudad):
-            self.cursor.execute(
-                f"INSERT INTO cache(idciudad) VALUES ({idciudad})")
-            self.mydb.commit()
+            elif territory['type'] == DEPARTAMENTO_TERRITORY:
+                return self.client.departamentos.find_one({'departamento_id': territory['departamento_id']})['scraped']
 
-        def search_place(self, ciudad, lang):
-            if ciudad['dest_mid'] is None:
+            else:
+                return self.client.paises.find_one({'pais_id': territory['pais_id']})['scraped']
+
+        def check_attraction_scraped(self, attraction_id):
+            """
+            Returns True if the attraction has been scraped, False otherwise.
+            """
+            return self.client.atracciones.find_one({'atraccion_id': attraction_id})
+
+        def set_scraped(self, territory):
+            """
+            Sets the place as scraped in the mongoDB database.
+            """
+            if territory['type'] == CIUDAD_TERRITORY:
+                self.client.ciudades.update_one(
+                    {'ciudad_id': territory['ciudad_id']}, {'$set': {'scraped': True}})
+            elif territory['type'] == DEPARTAMENTO_TERRITORY:
+                self.client.departamentos.update_one(
+                    {'departamento_id': territory['departamento_id']}, {'$set': {'scraped': True}})
+            else:
+                self.client.paises.update_one(
+                    {'pais_id': territory['pais_id']}, {'$set': {'scraped': True}})
+
+        def search_place(self, territory, lang):
+            """
+            Searches for the place in google's things to do.
+            It types the place name on the input field, and then checks wheter the place shows up in the suggestion box.
+            If it does, it clicks on the place and waits for the data to load.
+            """
+            if 'dest_mid' not in territory or territory['dest_mid'] == None:
                 url = self.get_url(lang)
                 self.driver.get(url)
+
                 input_ciudad = self.driver.find_element(By.CSS_SELECTOR,
                                                         'input[jsname="yrriRe"]')
 
                 action = ActionChains(self.driver)
 
                 action.double_click(input_ciudad)
-                for letter in ciudad['nombre_ciudad']:
+
+                query = ''
+
+                if territory['type'] == CIUDAD_TERRITORY:
+                    query = territory['ciudad_nombre']
+                elif territory['type'] == DEPARTAMENTO_TERRITORY:
+                    query = territory['departamento_nombre']
+                else:
+                    query = territory['pais_nombre']
+
+                for letter in query:
                     action.send_keys(letter)
                 action.perform()
 
@@ -181,13 +274,32 @@ def init():
                     return False
 
                 for suggestion in suggestions:
-                    if ciudad['nombre_departamento'].lower().strip() in suggestion.text.lower().strip():
-                        match = suggestion
-                        break
+                    if territory['type'] == PAIS_TERRITORY:
+                        if 'país' in suggestion.text.lower().strip():
+                            match = suggestion
+                            break
 
-                    if ciudad['nombre_pais'].lower().strip() in suggestion.text.lower().strip():
-                        match = suggestion
-                        break
+                        if 'isla' in suggestion.text.lower().strip():
+                            match = suggestion
+                            break
+
+                        if 'imperio' in suggestion.text.lower().strip():
+                            match = suggestion
+                            break
+
+                        if 'república' in suggestion.text.lower().strip():
+                            match = suggestion
+                            break
+                    else:
+                        if 'departamento_nombre' in territory:
+                            if territory['departamento_nombre'].lower().strip() in suggestion.text.lower().strip():
+                                match = suggestion
+                                break
+
+                        if 'pais_nombre' in territory:
+                            if territory['pais_nombre'].lower().strip() in suggestion.text.lower().strip():
+                                match = suggestion
+                                break
 
                 if match is None:
                     return False
@@ -202,7 +314,7 @@ def init():
 
             else:
                 self.driver.get(
-                    f"https://www.google.com/travel/things-to-do?hl={'en' if lang == 'en' else 'es-419'}&dest_mid={ciudad['dest_mid']}")
+                    f"https://www.google.com/travel/things-to-do?hl={'en' if lang == 'en' else 'es-419'}&dest_mid={territory['dest_mid']}")
 
             try:
                 WebDriverWait(self.driver, 5).until(EC.presence_of_element_located(
@@ -210,8 +322,8 @@ def init():
             except:
                 return False
 
-            if ciudad['dest_mid'] is None:
-                ciudad['dest_mid'] = self.driver.current_url.split('dest_mid=')[
+            if 'dest_mid' not in territory or territory['dest_mid'] is None:
+                territory['dest_mid'] = self.driver.current_url.split('dest_mid=')[
                     1].split('&')[0]
 
             self.driver.execute_script("""
@@ -229,6 +341,9 @@ def init():
             return True
 
         def get_nombre_place(self, place_element):
+            """
+            Retrieves the name of the place from the place_element, where place_element is the element containing the place's info.
+            """
             try:
                 return place_element.find_element(By.CSS_SELECTOR, '.skFvHc.YmWhbc').text
 
@@ -237,6 +352,9 @@ def init():
                 return None
 
         def get_descripcion_ttt(self, place_element):
+            """
+            Retrieves the description of the place from the place_element, where place_element is the element containing the place's info.
+            """
             try:
                 return place_element.find_element(By.CSS_SELECTOR, '.nFoFM').text
 
@@ -245,6 +363,9 @@ def init():
                 return None
 
         def get_rating(self, place_element):
+            """
+            Retrieves the rating of the place from the place_element, where place_element is the element containing the place's info.
+            """
             try:
                 return place_element.find_element(By.CSS_SELECTOR, '.KFi5wf.lA0BZ').text
 
@@ -253,6 +374,10 @@ def init():
                 return None
 
         def get_imagenes(self):
+            """
+            Retrieves the images of the place, provided that the place has images and the box of the place's info has been clicked.
+            It loops trough the images, changes the url to get the original image, and returns the list of images.
+            """
             try:
                 imagenes_elements = self.driver.find_elements(
                     By.CSS_SELECTOR, '.U4rdx c-wiz .NBZP0e.xbmkib .QtzoWd img')
@@ -267,6 +392,10 @@ def init():
                     if url is None or 'google.com/maps' in url:
                         continue
 
+                    if 'encrypted-' in url:
+                        imagenes.append(url)
+                        continue
+
                     imagen_url = url.replace(
                         'lh5', 'lh3').split('=')[0] + '=s0'
 
@@ -278,206 +407,190 @@ def init():
                 print('Imagenes not found')
                 return None
 
-        def scrape(self):
-            global cached, cached_mutex
+        def scrape_territory(self, territory):
+            """
+            Scrape the territory, provided that the territory has not been scraped yet.
+            """
+            territory_type = self.get_territory_type(territory)
+            territory['type'] = territory_type
 
-            self.ciudades = self.get_ciudades()
-            self.done = False
-            self.init_driver()
-
-            for ciudad in self.ciudades:
+            if self.check_territory_scraped(territory):
                 print(
-                    f"{ciudad['nombre_pais']} - {ciudad['nombre_departamento']} - {ciudad['nombre_ciudad']}")
+                    f"{self.get_territory_name(territory)} already scraped")
+                return False
 
-                start_time = time.time()
+            places = []
+            Found = True
 
-                if (self.check_if_cached(ciudad['idciudad'])):
-                    print('City already cached')
+            for lang in ['es', 'en']:
+                if not Found:
                     continue
 
-                places = []
-                Found = True
+                if not self.search_place(territory, lang):
+                    Found = False
+                    continue
 
-                for lang in ['es', 'en']:
-                    if not Found:
-                        continue
+                place_elements = self.driver.find_elements(
+                    By.CSS_SELECTOR, '.kQb6Eb .f4hh3d')
 
-                    if not self.search_place(ciudad, lang):
-                        Found = False
-                        continue
+                init_data = {
+                    '_id': None,
+                    'data_card_id': None,
+                    'nombre_place_es': None,
+                    'nombre_place_en': None,
+                    'descripcion_ttt_es': None,
+                    'descripcion_ttt_en': None,
+                    'rating': None,
+                    'descripcion_short_en': None,
+                    'descripcion_short_es': None,
+                    'descripcion_long_en': None,
+                    'descripcion_long_es': None,
+                    'direccion_es': None,
+                    'direccion_en': None,
+                    'web': None,
+                    'telefono': None,
+                    'email': None,
+                    'lat': None,
+                    'lng': None,
+                    'imagenes': [],
+                    'duracion': None,
+                    'rating': None,
+                    'costos': [],
+                    'horarios': [],
+                    'reviews_en': [],
+                    'reviews_es': [],
+                    'categorias': [],
+                }
 
-                    place_elements = self.driver.find_elements(
-                        By.CSS_SELECTOR, '.kQb6Eb .f4hh3d')
+                place = init_data.copy()
 
-                    init_data = {
-                        'data_card_id': None,
-                        'nombre_place_es': None,
-                        'nombre_place_en': None,
-                        'descripcion_ttt_es': None,
-                        'descripcion_ttt_en': None,
-                        'rating': None,
-                        'place_id': None,
-                        'descripcion_short_en': None,
-                        'descripcion_short_es': None,
-                        'descripcion_long_en': None,
-                        'descripcion_long_es': None,
-                        'direccion_es': None,
-                        'direccion_en': None,
-                        'web': None,
-                        'telefono': None,
-                        'email': None,
-                        'lat': None,
-                        'lng': None,
-                        'imagenes': [],
-                        'duracion': None,
-                        'rating': None,
-                        'costos': [],
-                        'horarios': [],
-                        'reviews_en': [],
-                        'reviews_es': [],
-                        'categorias': []
-                    }
-
+                for place_element in place_elements:
                     place = init_data.copy()
 
-                    for place_element in place_elements:
-                        place = init_data.copy()
+                    self.driver.execute_script("""
+                        var element = document.querySelector(".U4rdx");
+                        if (element)
+                            element.parentNode.removeChild(element);
+                    """)
 
-                        self.driver.execute_script("""
-                            var element = document.querySelector(".U4rdx");
-                            if (element)
-                                element.parentNode.removeChild(element);
-                        """)
+                    ActionChains(self.driver).move_to_element(
+                        place_element).perform()
 
-                        ActionChains(self.driver).move_to_element(
-                            place_element).perform()
+                    place_element.click()
 
+                    try:
+                        WebDriverWait(self.driver, 30).until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, '.U4rdx c-wiz')))
+                    except:
                         place_element.click()
-
-                        WebDriverWait(self.driver, 60).until(
+                        WebDriverWait(self.driver, 120).until(
                             EC.presence_of_element_located((By.CSS_SELECTOR, '.U4rdx c-wiz')))
 
-                        idx = None
-                        for i in range(len(places)):
-                            if places[i]['data_card_id'] == place_element.get_attribute('data-card-id'):
-                                idx = i
-                                place = places[i]
-                                break
+                    idx = None
+                    for i in range(len(places)):
+                        if places[i]['data_card_id'] == place_element.get_attribute('data-card-id'):
+                            idx = i
+                            place = places[i]
+                            break
 
-                        if place['data_card_id'] is None:
-                            place['data_card_id'] = place_element.get_attribute(
-                                'data-card-id')
+                    if place['data_card_id'] is None:
+                        place['data_card_id'] = place_element.get_attribute(
+                            'data-card-id')
 
-                        if place[f'nombre_place_{lang}'] is None:
-                            place[f'nombre_place_{lang}'] = self.get_nombre_place(
-                                place_element)
+                    if place[f'nombre_place_{lang}'] is None:
+                        place[f'nombre_place_{lang}'] = self.get_nombre_place(
+                            place_element)
 
-                        if place[f'descripcion_ttt_{lang}'] is None:
-                            place[f'descripcion_ttt_{lang}'] = self.get_descripcion_ttt(
-                                place_element)
+                    if place[f'descripcion_ttt_{lang}'] is None:
+                        place[f'descripcion_ttt_{lang}'] = self.get_descripcion_ttt(
+                            place_element)
 
-                        if place[f'rating'] is None:
-                            place[f'rating'] = self.get_rating(
-                                place_element)
+                    if place[f'rating'] is None:
+                        place[f'rating'] = self.get_rating(
+                            place_element)
 
-                        if place[f'imagenes'] == []:
-                            place[f'imagenes'] = self.get_imagenes()
+                    if place[f'imagenes'] == []:
+                        place[f'imagenes'] = self.get_imagenes()
 
-                        if place[f'place_id'] is None:
-                            place[f'place_id'] = self.get_place_id(
-                                place[f'nombre_place_{lang}'])
+                    if place[f'_id'] is None:
+                        place[f'_id'] = self.get_place_id(
+                            place[f'nombre_place_{lang}'])
 
-                        maps_data = MapsScraper().scrape(self.driver, place, lang)
+                    maps_data = MapsScraper().scrape(self.driver, place, lang)
 
-                        if maps_data is not None:
-                            for place_key in place.keys():
-                                if place[place_key] is None or place[place_key] == []:
-                                    if place_key in maps_data and (maps_data[place_key] is not None or maps_data[place_key] != []):
-                                        place[place_key] = maps_data[place_key]
+                    if maps_data is not None:
+                        for place_key in place.keys():
+                            if place[place_key] is None or place[place_key] == []:
+                                if place_key in maps_data and (maps_data[place_key] is not None or maps_data[place_key] != []):
+                                    place[place_key] = maps_data[place_key]
 
-                        if idx is None:
-                            places.append(place)
-                        else:
-                            places[idx] = place
+                    # If doesn't have google's place id, it means that the place does not have useful info
+                    if place[f'_id'] is None:
+                        continue
 
-                self.cursor.execute(
-                    f"DELETE FROM places where ciudades_idciudad = {ciudad['idciudad']}")
-                self.mydb.commit()
+                    if territory['type'] == CIUDAD_TERRITORY:
+                        place['ciudad'] = territory['ciudad_id']
+                        self.client.atracciones.delete_many(
+                            {'ciudad_id': territory['ciudad_id']})
 
-                values = []
-                for place in places:
-                    print(place)
-                    values.append((
-                        ciudad['idciudad'],
-                        place['data_card_id'],
-                        place['place_id'],
-                        place['nombre_place_es'],
-                        place['nombre_place_en'],
-                        place['descripcion_ttt_es'],
-                        place['descripcion_ttt_en'],
-                        place['descripcion_short_es'],
-                        place['descripcion_short_en'],
-                        place['descripcion_long_es'],
-                        place['descripcion_long_en'],
-                        place['direccion_es'],
-                        place['direccion_en'],
-                        place['web'],
-                        place['telefono'],
-                        place['email'],
-                        place['lat'],
-                        place['lng'],
-                        json.dumps(place['imagenes']),
-                        place['duracion'],
-                        place['rating'],
-                        json.dumps(place['costos']),
-                        json.dumps(place['horarios']),
-                        json.dumps(place['reviews_es']),
-                        json.dumps(place['reviews_en']),
-                        json.dumps(place['categorias']),
-                        True,
-                    ))
+                    elif territory['type'] == DEPARTAMENTO_TERRITORY:
+                        place['departamento_id'] = territory['departamento_id']
+                        self.client.atracciones.delete_many(
+                            {'departamento_id': territory['departamento_id']})
 
-                self.cursor.executemany("""
-                    INSERT INTO places(
-                        ciudades_idciudad, 
-                        data_card_id,
-                        place_id,
-                        nombre_place_es,
-                        nombre_place_en,
-                        descripcion_ttt_es,
-                        descripcion_ttt_en,
-                        descripcion_short_es,
-                        descripcion_short_en,
-                        descripcion_long_es,
-                        descripcion_long_en,
-                        direccion_es,
-                        direccion_en,
-                        web,
-                        telefono,
-                        email,
-                        lat,
-                        lng,
-                        imagenes,
-                        duracion,
-                        rating,
-                        costos,
-                        horarios,
-                        reviews_es,
-                        reviews_en,
-                        categorias,
-                        maps_scraped
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, values)
-                self.mydb.commit()
-                print(
-                    f"{ciudad['nombre_ciudad']} -> {self.cursor.rowcount} places inserted")
+                    else:
+                        place['pais_id'] = territory['pais_id']
+                        self.client.atracciones.delete_many(
+                            {'pais_id': territory['pais_id']})
 
-                print(f"elapsed time: {time.time() - start_time} seconds")
+                    if idx is None:
+                        places.append(place)
+                    else:
+                        places[idx] = place
 
-                self.add_cached(ciudad['idciudad'])
+            values = []
+            for place in places:
 
-            self.done = True
-            self.driver.close()
+                attraction = self.check_attraction_scraped(place['_id'])
+                if attraction is not None:
+                    set_query = {}
+                    if attraction['ciudad_id'] is None and place['ciudad_id'] is not None:
+                        set_query['ciudad_id'] = place['ciudad_id']
+
+                    if attraction['departamento_id'] is None and place['departamento_id'] is not None:
+                        set_query['departamento_id'] = place['departamento_id']
+
+                    if attraction['pais_id'] is None and place['pais_id'] is not None:
+                        set_query['pais_id'] = place['pais_id']
+
+                    print(
+                        f"{place['_id']} {place['nombre_place_es']} already scraped")
+
+                    values.append(UpdateOne({
+                        '_id': place['_id']
+                    }, {
+                        '$set': set_query
+                    }))
+                    continue
+
+                values.append(InsertOne(place))
+
+            if len(values) > 0:
+                self.client.atracciones.bulk_write(values)
+
+            print(
+                f"{self.get_territory_name(territory)} -> {len(values)} attractions inserted")
+
+            self.set_scraped(territory)
+
+        def scrape(self):
+            self.territories = self.get_places_to_scrape()
+            self.done = len(self.territories) == 0
+
+            for territory in self.territories:
+                self.init_driver()
+                self.scrape_territory(territory)
+                self.driver.close()
 
         def run(self):
             while not self.done:

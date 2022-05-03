@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS `paises`;
 CREATE TABLE `paises` (
  `idpais` int(11) NOT NULL AUTO_INCREMENT,
  `nombre_pais` varchar(70) NOT NULL,
+ `priority` int NOT NULL DEFAULT 10,
  `created_at` timestamp NULL DEFAULT current_timestamp(),
  `updated_at` timestamp NULL DEFAULT NULL,
  PRIMARY KEY (`idpais`)
@@ -16,6 +17,7 @@ CREATE TABLE `departamentos` (
  `iddepartamento` int(11) NOT NULL AUTO_INCREMENT,
  `paises_idpais` int(11) NOT NULL,
  `nombre_departamento` varchar(70) NOT NULL,
+ `priority` int NOT NULL DEFAULT 10,
  `created_at` timestamp NULL DEFAULT current_timestamp(),
  `updated_at` timestamp NULL DEFAULT NULL,
  PRIMARY KEY (`iddepartamento`,`paises_idpais`),
@@ -27,6 +29,7 @@ CREATE TABLE `ciudades` (
  `idciudad` int(11) NOT NULL AUTO_INCREMENT,
  `departamentos_iddepartamento` int(11) NOT NULL,
  `nombre_ciudad` varchar(70) NOT NULL,
+ `priority` int NOT NULL DEFAULT 10,
  `created_at` timestamp NULL DEFAULT current_timestamp(),
  `updated_at` timestamp NULL DEFAULT NULL,
  PRIMARY KEY (`idciudad`,`departamentos_iddepartamento`),

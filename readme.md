@@ -47,7 +47,7 @@ Whenever an instance crashes for whatever reason, it will be restarted automatic
 To run the scraper, execute the following command:
 
 ```
-    python main.py {thread_count}
+    python main.py --threads {thread_count} --country {country_name}
 ```
 
 Where thread_count is the number of threads (instances) that will be used to scrape the data.

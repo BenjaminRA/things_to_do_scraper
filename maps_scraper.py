@@ -363,7 +363,7 @@ class MapsScraper():
         #             'div[class="onegoogle noprint app-sandbar-vasquette"]')
 
     def scrape(self, driver, place, lang):
-        if place['place_id'] is None:
+        if place['_id'] is None:
             return None
 
         main_windows_name = driver.window_handles[0]
@@ -380,7 +380,7 @@ class MapsScraper():
 
             self.driver.set_page_load_timeout(60)
             self.driver.get(
-                f"https://www.google.com/maps/place/?q=place_id:{place['place_id']}&hl={'en' if lang == 'en' else 'es-419'}")
+                f"https://www.google.com/maps/place/?q=place_id:{place['_id']}&hl={'en' if lang == 'en' else 'es-419'}")
 
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, '.lMbq3e')))
@@ -445,7 +445,7 @@ class MapsScraper():
             return self.data
 
         except Exception as e:
-            print(f'Error scraping {place["place_id"]}')
+            print(f'Error scraping {place["_id"]}')
             print(e)
             traceback.print_exc()
 
