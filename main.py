@@ -485,13 +485,8 @@ def init(idx):
 
                     place_element.click()
 
-                    try:
-                        WebDriverWait(self.driver, 30).until(
-                            EC.presence_of_element_located((By.CSS_SELECTOR, '.U4rdx c-wiz')))
-                    except:
-                        place_element.click()
-                        WebDriverWait(self.driver, 120).until(
-                            EC.presence_of_element_located((By.CSS_SELECTOR, '.U4rdx c-wiz')))
+                    WebDriverWait(self.driver, 120).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, '.U4rdx c-wiz')))
 
                     idx = None
                     for i in range(len(places)):
