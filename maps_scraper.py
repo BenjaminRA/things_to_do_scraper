@@ -25,10 +25,11 @@ load_dotenv()
 
 class MapsScraper():
 
-    def __init__(self):
+    def __init__(self, verbose=False):
         self.driver = None
         self.data = {}
         self.json_data = {}
+        self.verbose = verbose
         self.lang = ''
 
     def init_driver(self):
@@ -58,24 +59,23 @@ class MapsScraper():
             self.json_data = json.loads(raw_json)[6]
 
         except Exception as e:
-            print(e)
-            traceback.print_exc()
+            if self.verbose:
+                print(e)
+                traceback.print_exc()
 
     def get_direccion(self, lang):
         try:
             self.data[f'direccion_{lang}'] = ', '.join(self.json_data[2])
         except Exception as e:
-            print(f'direccion not found')
-            # print(e)
-            # traceback.print_exc()
+            if self.verbose:
+                print(f'direccion not found')
 
     def get_web(self):
         try:
             self.data[f'web'] = self.json_data[7][1]
         except Exception as e:
-            print(f'web not found')
-            # print(e)
-            # traceback.print_exc()
+            if self.verbose:
+                print(f'web not found')
 
     def get_telefono(self):
         try:
@@ -87,9 +87,8 @@ class MapsScraper():
             #     self.data[f'telefono'] = element.text
             self.data[f'telefono'] = self.json_data[178][0][0]
         except Exception as e:
-            print(f'telefono not found')
-            # print(e)
-            # traceback.print_exc()
+            if self.verbose:
+                print(f'telefono not found')
 
     def get_horarios(self):
         try:
@@ -138,9 +137,8 @@ class MapsScraper():
                 self.data['horarios'] = temp
 
         except Exception as e:
-            print(f'horarios not found')
-            # print(e)
-            # traceback.print_exc()
+            if self.verbose:
+                print(f'horarios not found')
 
     def get_coordenadas(self):
         try:
@@ -148,18 +146,16 @@ class MapsScraper():
             self.data['lng'] = self.json_data[9][3]
 
         except Exception as e:
-            print(f'coordenadas not found')
-            # print(e)
-            # traceback.print_exc()
+            if self.verbose:
+                print(f'coordenadas not found')
 
     def get_rating(self):
         try:
             self.data['rating'] = self.json_data[4][7]
 
         except Exception as e:
-            print(f'rating not found')
-            # print(e)
-            # traceback.print_exc()
+            if self.verbose:
+                print(f'rating not found')
 
     def get_categorias(self):
         try:
@@ -167,9 +163,8 @@ class MapsScraper():
                 map(lambda x: x[0], self.json_data[76]))
 
         except Exception as e:
-            print(f'categorias not found')
-            # print(e)
-            # traceback.print_exc()
+            if self.verbose:
+                print(f'categorias not found')
 
     def get_descripcion(self, lang):
         found = False
@@ -180,8 +175,8 @@ class MapsScraper():
             found = True
 
         except Exception as e:
-            pass
-            # print('descripcion not found')
+            if self.verbose:
+                print('descripcion not found')
 
         try:
             self.data[f'descripcion_short_{lang}'] = self.json_data[32][0][1]
@@ -189,13 +184,12 @@ class MapsScraper():
             found = True
 
         except Exception as e:
-            pass
-            # print(f'descripcion not found')
-            # print(e)
-            # traceback.print_exc()
+            if self.verbose:
+                print(f'descripcion not found')
 
         if not found:
-            print('descripcion not found')
+            if self.verbose:
+                print('descripcion not found')
 
     def get_imagenes(self):
         changed_page = False
@@ -264,9 +258,8 @@ class MapsScraper():
             self.data['imagenes'] = images
 
         except Exception as e:
-            print(f'imagenes not found')
-            # print(e)
-            # traceback.print_exc()
+            if self.verbose:
+                print(f'imagenes not found')
 
         finally:
             if changed_page:
@@ -288,14 +281,13 @@ class MapsScraper():
                 "horas", "hour").replace("minuto", "minute")
 
         except Exception as e:
-            print('duracion not found')
-            # print(e)
-            # traceback.print_exc()
+            if self.verbose:
+                print('duracion not found')
 
     def get_reviews(self, lang):
         # changed_page = False
         try:
-            WebDriverWait(self.driver, 30).until(
+            WebDriverWait(self.driver, 20).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, 'button[jsaction="pane.reviewlist.goToReviews"]')))
 
             element = self.driver.find_elements(
@@ -319,7 +311,7 @@ class MapsScraper():
 
                 reviews = []
 
-                WebDriverWait(self.driver, 60).until(EC.presence_of_element_located(
+                WebDriverWait(self.driver, 30).until(EC.presence_of_element_located(
                     (By.CSS_SELECTOR, 'div[class="m6QErb"][jsan="t-dgE5uNmzjiE,7.m6QErb"] .jftiEf.L6Bbsd')))
 
                 review_elements = self.driver.find_elements(
@@ -352,9 +344,8 @@ class MapsScraper():
                 self.data[f'reviews_{lang}'] = reviews
 
         except Exception as e:
-            print(f'reviews_{lang} not found')
-            # print(e)
-            # traceback.print_exc()
+            if self.verbose:
+                print(f'reviews_{lang} not found')
 
         # finally:
         #     if changed_page:
@@ -362,11 +353,11 @@ class MapsScraper():
         #         self.wait_for_element(
         #             'div[class="onegoogle noprint app-sandbar-vasquette"]')
 
-    def scrape(self, driver, place, lang):
+    def scrape(self, driver, place, lang, current_window_index=0):
         if place['_id'] is None:
             return None
 
-        main_windows_name = driver.window_handles[0]
+        main_windows_name = driver.window_handles[current_window_index]
 
         try:
             self.place = place
@@ -445,9 +436,10 @@ class MapsScraper():
             return self.data
 
         except Exception as e:
-            print(f'Error scraping {place["_id"]}')
-            print(e)
-            traceback.print_exc()
+            if self.verbose:
+                print(f'Error scraping {place["_id"]}')
+                print(e)
+                traceback.print_exc()
 
             if self.driver is not None:
                 self.driver.close()

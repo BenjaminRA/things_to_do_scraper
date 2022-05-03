@@ -13,6 +13,7 @@ from seleniumwire import webdriver
 from seleniumwire.utils import decode
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.window import WindowTypes
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -31,6 +32,8 @@ parser.add_argument('--priority', type=str, default='',
                     help='Scrape countries with specified priority (default: it will scrape all countries)')
 parser.add_argument('--chunck', type=int, default=100,
                     help='Chunck size fetch from all three collections on the db. (default: 100 => 100 * 3 = 300)')
+parser.add_argument('--verbose', type=bool, default=False,
+                    help='Verbose mode (default: False)')
 
 args = parser.parse_args()
 
@@ -143,8 +146,10 @@ def init(idx):
                 raise Exception('place id not found')
 
             except Exception as e:
-                # print(e)
-                # traceback.print_exc()
+                if args.verbose:
+                    print(f'Error getting place id: {e}')
+                    print(e)
+                    traceback.print_exc()
                 return None
 
         # def get_json(self):
@@ -215,9 +220,9 @@ def init(idx):
             else:
                 return self.client.paises.find_one({'pais_id': territory['pais_id']})['scraped']
 
-        def check_attraction_scraped(self, attraction_id):
+        def fetch_attraction(self, attraction_id):
             """
-            Returns True if the attraction has been scraped, False otherwise.
+            Returns the attraction by _id.
             """
             return self.client.atracciones.find_one({'_id': attraction_id})
 
@@ -234,6 +239,8 @@ def init(idx):
             else:
                 self.client.paises.update_one(
                     {'pais_id': territory['pais_id']}, {'$set': {'scraped': True}})
+
+            print(f"{self.get_territory_name(territory)} scraped")
 
         def search_place(self, territory, lang):
             """
@@ -269,7 +276,7 @@ def init(idx):
                     action.send_keys(letter)
                 action.perform()
 
-                WebDriverWait(self.driver, 30).until(
+                WebDriverWait(self.driver, 20).until(
                     element_has_loaded_suggestions())
 
                 suggestions = self.driver.find_elements(
@@ -324,7 +331,7 @@ def init(idx):
                     f"https://www.google.com/travel/things-to-do?hl={'en' if lang == 'en' else 'es-419'}&dest_mid={territory['dest_mid']}")
 
             try:
-                WebDriverWait(self.driver, 5).until(EC.presence_of_element_located(
+                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
                     (By.CSS_SELECTOR, '.kQb6Eb')))
             except:
                 return False
@@ -355,7 +362,8 @@ def init(idx):
                 return place_element.find_element(By.CSS_SELECTOR, '.skFvHc.YmWhbc').text
 
             except:
-                print('Nombre not found')
+                if args.verbose:
+                    print('Nombre not found')
                 return None
 
         def get_descripcion_ttt(self, place_element):
@@ -366,7 +374,8 @@ def init(idx):
                 return place_element.find_element(By.CSS_SELECTOR, '.nFoFM').text
 
             except:
-                print('Descripcion Things To Do not found')
+                if args.verbose:
+                    print('Descripcion Things To Do not found')
                 return None
 
         def get_rating(self, place_element):
@@ -377,7 +386,8 @@ def init(idx):
                 return place_element.find_element(By.CSS_SELECTOR, '.KFi5wf.lA0BZ').text
 
             except:
-                print('Rating not found')
+                if args.verbose:
+                    print('Rating not found')
                 return None
 
         def get_imagenes(self):
@@ -411,8 +421,60 @@ def init(idx):
                 return imagenes
 
             except:
-                print('Imagenes not found')
+                if args.verbose:
+                    print('Imagenes not found')
                 return None
+
+        def scrape_by_language_new_tab(self, territory, place, lang):
+            if place['data_card_id'] is None:
+                return False
+
+            main_windows_name = self.driver.window_handles[0]
+            self.driver.switch_to.new_window(WindowTypes.TAB)
+
+            self.driver.set_page_load_timeout(60)
+
+            if not self.search_place(territory, lang):
+                return False
+
+            self.driver.execute_script("""
+                var element = document.querySelector(".U4rdx");
+                if (element)
+                    element.parentNode.removeChild(element);
+            """)
+
+            place_element = self.driver.find_element(
+                By.CSS_SELECTOR, f"div[data-card-id='{place['data_card_id']}']")
+
+            ActionChains(self.driver).move_to_element(
+                place_element).perform()
+
+            place_element.click()
+
+            WebDriverWait(self.driver, 30).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, '.U4rdx c-wiz')))
+
+            if place[f'nombre_place_{lang}'] is None:
+                place[f'nombre_place_{lang}'] = self.get_nombre_place(
+                    place_element)
+
+            if place[f'descripcion_ttt_{lang}'] is None:
+                place[f'descripcion_ttt_{lang}'] = self.get_descripcion_ttt(
+                    place_element)
+
+            maps_data = MapsScraper(args.verbose).scrape(
+                self.driver, place, lang, 1)
+
+            if maps_data is not None:
+                for place_key in place.keys():
+                    if place[place_key] is None or place[place_key] == []:
+                        if place_key in maps_data and (maps_data[place_key] is not None or maps_data[place_key] != []):
+                            place[place_key] = maps_data[place_key]
+
+            if self.driver is not None:
+                self.driver.close()
+                self.driver.switch_to.window(
+                    window_name=main_windows_name)
 
         def scrape_territory(self, territory):
             """
@@ -426,134 +488,87 @@ def init(idx):
                     f"{self.get_territory_name(territory)} already scraped")
                 return False
 
-            places = []
-            Found = True
+            if not self.search_place(territory, 'es'):
+                return True
 
-            for lang in ['es', 'en']:
-                if not Found:
-                    continue
+            place_elements = self.driver.find_elements(
+                By.CSS_SELECTOR, '.kQb6Eb .f4hh3d')
 
-                if not self.search_place(territory, lang):
-                    Found = False
-                    continue
+            init_data = {
+                '_id': None,
+                'data_card_id': None,
+                'nombre_place_es': None,
+                'nombre_place_en': None,
+                'descripcion_ttt_es': None,
+                'descripcion_ttt_en': None,
+                'rating': None,
+                'descripcion_short_en': None,
+                'descripcion_short_es': None,
+                'descripcion_long_en': None,
+                'descripcion_long_es': None,
+                'direccion_es': None,
+                'direccion_en': None,
+                'web': None,
+                'telefono': None,
+                'email': None,
+                'lat': None,
+                'lng': None,
+                'imagenes': [],
+                'duracion': None,
+                'rating': None,
+                'costos': [],
+                'horarios': [],
+                'reviews_en': [],
+                'reviews_es': [],
+                'categorias': []
+            }
 
-                place_elements = self.driver.find_elements(
-                    By.CSS_SELECTOR, '.kQb6Eb .f4hh3d')
-
-                init_data = {
-                    '_id': None,
-                    'data_card_id': None,
-                    'nombre_place_es': None,
-                    'nombre_place_en': None,
-                    'descripcion_ttt_es': None,
-                    'descripcion_ttt_en': None,
-                    'rating': None,
-                    'descripcion_short_en': None,
-                    'descripcion_short_es': None,
-                    'descripcion_long_en': None,
-                    'descripcion_long_es': None,
-                    'direccion_es': None,
-                    'direccion_en': None,
-                    'web': None,
-                    'telefono': None,
-                    'email': None,
-                    'lat': None,
-                    'lng': None,
-                    'imagenes': [],
-                    'duracion': None,
-                    'rating': None,
-                    'costos': [],
-                    'horarios': [],
-                    'reviews_en': [],
-                    'reviews_es': [],
-                    'categorias': [],
-                }
-
+            for place_element in place_elements:
                 place = init_data.copy()
 
-                for place_element in place_elements:
-                    place = init_data.copy()
+                self.driver.execute_script("""
+                    var element = document.querySelector(".U4rdx");
+                    if (element)
+                        element.parentNode.removeChild(element);
+                """)
 
-                    self.driver.execute_script("""
-                        var element = document.querySelector(".U4rdx");
-                        if (element)
-                            element.parentNode.removeChild(element);
-                    """)
+                ActionChains(self.driver).move_to_element(
+                    place_element).perform()
 
-                    ActionChains(self.driver).move_to_element(
-                        place_element).perform()
+                place_element.click()
 
-                    place_element.click()
+                WebDriverWait(self.driver, 30).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, '.U4rdx c-wiz')))
 
-                    WebDriverWait(self.driver, 120).until(
-                        EC.presence_of_element_located((By.CSS_SELECTOR, '.U4rdx c-wiz')))
+                if place['data_card_id'] is None:
+                    place['data_card_id'] = place_element.get_attribute(
+                        'data-card-id')
 
-                    idx = None
-                    for i in range(len(places)):
-                        if places[i]['data_card_id'] == place_element.get_attribute('data-card-id'):
-                            idx = i
-                            place = places[i]
-                            break
+                if place[f'nombre_place_es'] is None:
+                    place[f'nombre_place_es'] = self.get_nombre_place(
+                        place_element)
 
-                    if place['data_card_id'] is None:
-                        place['data_card_id'] = place_element.get_attribute(
-                            'data-card-id')
+                if place[f'descripcion_ttt_es'] is None:
+                    place[f'descripcion_ttt_es'] = self.get_descripcion_ttt(
+                        place_element)
 
-                    if place[f'nombre_place_{lang}'] is None:
-                        place[f'nombre_place_{lang}'] = self.get_nombre_place(
-                            place_element)
+                if place[f'rating'] is None:
+                    place[f'rating'] = self.get_rating(
+                        place_element)
 
-                    if place[f'descripcion_ttt_{lang}'] is None:
-                        place[f'descripcion_ttt_{lang}'] = self.get_descripcion_ttt(
-                            place_element)
+                if place[f'imagenes'] == []:
+                    place[f'imagenes'] = self.get_imagenes()
 
-                    if place[f'rating'] is None:
-                        place[f'rating'] = self.get_rating(
-                            place_element)
+                if place[f'_id'] is None:
+                    place[f'_id'] = self.get_place_id(
+                        place[f'nombre_place_es'])
 
-                    if place[f'imagenes'] == []:
-                        place[f'imagenes'] = self.get_imagenes()
+                # If doesn't have google's place id, it means that the place does not have useful information
+                if place[f'_id'] is None:
+                    continue
 
-                    if place[f'_id'] is None:
-                        place[f'_id'] = self.get_place_id(
-                            place[f'nombre_place_{lang}'])
+                attraction = self.fetch_attraction(place['_id'])
 
-                    maps_data = MapsScraper().scrape(self.driver, place, lang)
-
-                    if maps_data is not None:
-                        for place_key in place.keys():
-                            if place[place_key] is None or place[place_key] == []:
-                                if place_key in maps_data and (maps_data[place_key] is not None or maps_data[place_key] != []):
-                                    place[place_key] = maps_data[place_key]
-
-                    # If doesn't have google's place id, it means that the place does not have useful info
-                    if place[f'_id'] is None:
-                        continue
-
-                    if territory['type'] == CIUDAD_TERRITORY:
-                        place['ciudad'] = territory['ciudad_id']
-                        self.client.atracciones.delete_many(
-                            {'ciudad_id': territory['ciudad_id']})
-
-                    elif territory['type'] == DEPARTAMENTO_TERRITORY:
-                        place['departamento_id'] = territory['departamento_id']
-                        self.client.atracciones.delete_many(
-                            {'departamento_id': territory['departamento_id']})
-
-                    else:
-                        place['pais_id'] = territory['pais_id']
-                        self.client.atracciones.delete_many(
-                            {'pais_id': territory['pais_id']})
-
-                    if idx is None:
-                        places.append(place)
-                    else:
-                        places[idx] = place
-
-            values = []
-            for place in places:
-
-                attraction = self.check_attraction_scraped(place['_id'])
                 if attraction is not None:
                     set_query = {}
                     if 'ciudad_id' not in attraction and place['ciudad_id'] is not None:
@@ -568,22 +583,46 @@ def init(idx):
                     print(
                         f"{place['_id']} {place['nombre_place_es']} already scraped")
 
-                    values.append(UpdateOne({
+                    self.client.atracciones.update_one({
                         '_id': place['_id']
                     }, {
                         '$set': set_query
-                    }))
+                    })
+
                     continue
 
-                values.append(InsertOne(place))
+                maps_data = MapsScraper(args.verbose).scrape(
+                    self.driver, place, 'es')
 
-            if len(values) > 0:
-                self.client.atracciones.bulk_write(values)
+                if maps_data is not None:
+                    for place_key in place.keys():
+                        if place[place_key] is None or place[place_key] == []:
+                            if place_key in maps_data and (maps_data[place_key] is not None or maps_data[place_key] != []):
+                                place[place_key] = maps_data[place_key]
 
-            print(
-                f"{self.get_territory_name(territory)} -> {len(values)} attractions inserted")
+                self.scrape_by_language_new_tab(territory, place, 'en')
 
-            self.set_scraped(territory)
+                if territory['type'] == CIUDAD_TERRITORY:
+                    place['ciudad'] = territory['ciudad_id']
+                    self.client.atracciones.delete_many(
+                        {'ciudad_id': territory['ciudad_id']})
+
+                elif territory['type'] == DEPARTAMENTO_TERRITORY:
+                    place['departamento_id'] = territory['departamento_id']
+                    self.client.atracciones.delete_many(
+                        {'departamento_id': territory['departamento_id']})
+
+                else:
+                    place['pais_id'] = territory['pais_id']
+                    self.client.atracciones.delete_many(
+                        {'pais_id': territory['pais_id']})
+
+                self.client.atracciones.insert_one(place)
+
+                print(
+                    f"Scraped: \"{place['nombre_place_es']}\" from {self.get_territory_name(territory)}")
+
+            return True
 
         def scrape(self):
             self.territories = self.get_places_to_scrape()
@@ -591,7 +630,8 @@ def init(idx):
 
             for territory in self.territories:
                 self.init_driver()
-                self.scrape_territory(territory)
+                if self.scrape_territory(territory):
+                    self.set_scraped(territory)
                 self.driver.close()
 
         def run(self):
@@ -599,20 +639,22 @@ def init(idx):
                 try:
                     self.scrape()
                 except Exception as e:
-                    print(e)
-                    traceback.print_exc()
+                    if args.verbose:
+                        print(e)
+                        traceback.print_exc()
                     if self.driver is not None:
                         try:
                             self.driver.close()
                         except:
-                            print(e)
+                            if args.verbose:
+                                print(e)
 
     task = ScrapingThread(idx)
     task.run()
 
 
 if __name__ == "__main__":
-    print('Starting threads')
+    print(f'Starting {thread_count} threads')
     for i in range(thread_count):
         threads.append(Process(target=init, args=(i,)))
         threads[i].start()
