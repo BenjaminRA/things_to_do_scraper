@@ -24,11 +24,13 @@ from decimal import Decimal
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--threads', type=int, default=1,
-                    help='Number of threads to run')
+                    help='Number of threads to run (default: 1)')
 parser.add_argument('--country', type=str, default='',
                     help='Country to scrape')
 parser.add_argument('--priority', type=str, default='',
                     help='Scrape countries with specified priority')
+parser.add_argument('--chunck', type=int, default=100,
+                    help='Chunck size fetch from all three collections on the db. (default: 100 => 100 * 3 = 300)')
 
 args = parser.parse_args()
 
@@ -187,11 +189,11 @@ def init():
                 query['priority'] = int(args.priority)
 
             ciudades = list(self.client.ciudades.find(
-                query).sort('priority', 1).limit(100))
+                query).sort('priority', 1).limit(args.chunck))
             departamentos = list(self.client.departamentos.find(
-                query).sort('priority', 1).limit(100))
+                query).sort('priority', 1).limit(args.chunck))
             paises = list(self.client.paises.find(
-                query).sort('priority', 1).limit(100))
+                query).sort('priority', 1).limit(args.chunck))
 
             random.shuffle(ciudades)
             random.shuffle(departamentos)
