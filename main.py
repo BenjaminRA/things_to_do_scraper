@@ -556,13 +556,13 @@ def init(idx):
                 attraction = self.check_attraction_scraped(place['_id'])
                 if attraction is not None:
                     set_query = {}
-                    if attraction['ciudad_id'] is None and place['ciudad_id'] is not None:
+                    if 'ciudad_id' not in attraction and place['ciudad_id'] is not None:
                         set_query['ciudad_id'] = place['ciudad_id']
 
-                    if attraction['departamento_id'] is None and place['departamento_id'] is not None:
+                    if 'departamento_id' not in attraction and place['departamento_id'] is not None:
                         set_query['departamento_id'] = place['departamento_id']
 
-                    if attraction['pais_id'] is None and place['pais_id'] is not None:
+                    if 'pais_id' not in attraction and place['pais_id'] is not None:
                         set_query['pais_id'] = place['pais_id']
 
                     print(
