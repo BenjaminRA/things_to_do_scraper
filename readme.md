@@ -1,45 +1,45 @@
-# Setting up database
+# Setting up from scratch
 
-Make sure to be using these settings in the database and all the tables created inside of it:
+## Python
 
--   Charset: utf8mb4
--   Collation: utf8mb4_unicode_ci
+Download the installer from [https://www.python.org/downloads](https://www.python.org/downloads)
 
-Once that's done, import the database structure from the file `tables.sql`.
+When you run the installer, you have to check the box labeled `Add Python X.XX to PATH`.
 
-AFter that you can dump the data in the following order:
+## Code
 
--   `paises.sql`
--   `departamentos.sql`
--   `ciudades.sql`
+If you don't have git, you can download this code clicking on the green button at the top right corner labeled `Code`. Then click on `Download ZIP` and unzip the file.
 
-Using the command:
+## Python libraries
 
-```
-SOURCE PATH\TO\FILE\dump.sql
-```
-
-# Scraper
-
-To configure the mysql database, create a `.env` file with the following content:
+Open a terminal and navigate the folder where you unzipped the code.
+Once you are in the folder, run the following command:
 
 ```
-    DB_HOST=XXXXXXXXXX
-    DB_USER=XXXXXXXXXX
-    DB_PASSWORD=XXXXXXXXXX
-    DB_NAME=XXXXXXXXXX
+pip install -r requirements.txt
 ```
 
-## Scrape Atractions
+## Credentials
+
+Create a `.env` file in the root folder of the project. Copy the following content:
+
+```
+MONGODB_HOST=XXXXXXXXXX
+MONGODB_USER=XXXXXXXXXX
+MONGODB_PASSWORD=XXXXXXXXXX
+```
+
+Replace the variable names with the credentials of the mongo database you want to use.
+
+## Scraper
 
 Since it uses selenium, you need to install the driver for your browser. To do that, you can follow the instructions on the [Selenium documentation](https://selenium-python.readthedocs.io/installation.html#drivers).
-The script is using `Chrome`, but you can use any other browser by changing the driver at line:
 
-```
-112 self.driver = webdriver.Chrome()
-```
+The script is using `Chrome`, but you can use any other browser by changing the driver initialization code.
 
-The scraper can run mutiple scraper instances, and every time one of the scrapers collects information about a city, the id of city will be stored in the table `cache`.
+Once you've downloaded the driver, add the folder where it is located to your `PATH` environment variable.
+
+The scraper can run mutiple scraper instances, and every time one of the scrapers collects information about a city, that city will be tagged as `scraped`.
 That way, the other scrapers can skip the cities that have already been scraped.
 
 Whenever an instance crashes for whatever reason, it will be restarted automatically.
@@ -47,23 +47,16 @@ Whenever an instance crashes for whatever reason, it will be restarted automatic
 To run the scraper, execute the following command:
 
 ```
-    python main.py --threads {thread_count} --country {country_name}
+python main.py
 ```
 
-Where thread_count is the number of threads (instances) that will be used to scrape the data.
-When no thread_count is specified, the default value is 1.
-
-`main.py` will get the name of all the atractions in a city, and store them in the database table called `places`.
-
-## Scrape atractions information
-
-To run the scraper, execute the following command:
+You can run the command with the '-h' flag to see the available options.
 
 ```
-    python maps_scraper.py {thread_count}
+options:
+  -h, --help           show this help message and exit
+  --threads THREADS    Number of threads to run (default: 1)
+  --country COUNTRY    Country to scrape (default: it will scrape all countries)
+  --priority PRIORITY  Scrape countries with specified priority (default: it will scrape all countries)
+  --chunck CHUNCK      Chunck size fetch from all three collections on the db. (default: 100 => 100 * 3 = 300)
 ```
-
-Where thread_count is the number of threads (instances) that will be used to scrape the data.
-When no thread_count is specified, the default value is 1.
-
-`maps_scraper.py` will get the info of all the atractions scraped by `main.py`, and store them in the database table called `places`, in the column `info` as a RAW JSON.

@@ -26,9 +26,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--threads', type=int, default=1,
                     help='Number of threads to run (default: 1)')
 parser.add_argument('--country', type=str, default='',
-                    help='Country to scrape')
+                    help='Country to scrape (default: it will scrape all countries)')
 parser.add_argument('--priority', type=str, default='',
-                    help='Scrape countries with specified priority')
+                    help='Scrape countries with specified priority (default: it will scrape all countries)')
 parser.add_argument('--chunck', type=int, default=100,
                     help='Chunck size fetch from all three collections on the db. (default: 100 => 100 * 3 = 300)')
 
