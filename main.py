@@ -5,6 +5,7 @@ import random
 import sys
 import argparse
 import traceback
+from datetime import datetime
 from multiprocessing import Process
 from typing import final
 from dotenv import load_dotenv
@@ -617,6 +618,8 @@ def init(idx):
                     self.client.atracciones.delete_many(
                         {'pais_id': territory['pais_id']})
 
+                place['created_at'] = datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S")
                 self.client.atracciones.insert_one(place)
 
                 print(
