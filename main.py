@@ -33,6 +33,8 @@ parser.add_argument('--priority', type=str, default='',
                     help='Scrape countries with specified priority (default: it will scrape all countries)')
 parser.add_argument('--chunck', type=int, default=100,
                     help='Chunck size fetch from all three collections on the db. (default: 100 => 100 * 3 = 300)')
+parser.add_argument('--offset', type=int, default=0,
+                    help='Windows X position offset. (default: 0)')
 parser.add_argument('--verbose', type=bool, default=False,
                     help='Verbose mode (default: False)')
 
@@ -88,7 +90,8 @@ def init(idx):
                 except:
                     pass
             options = webdriver.ChromeOptions()
-            options.add_argument(f"window-position={(self.idx)*400},0")
+            options.add_argument(
+                f"window-position={args.offset + (self.idx)*400},0")
             # options.add_argument('window-position=960,0')
             # options.add_experimental_option(
             #     'prefs', {'intl.accept_languages': 'en-GB' if language == 'en' else 'es-ES'})
