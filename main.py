@@ -536,6 +536,8 @@ def init(idx):
                 ActionChains(self.driver).move_to_element(
                     place_element).perform()
 
+                del self.driver.requests
+
                 place_element.click()
 
                 WebDriverWait(self.driver, 30).until(
@@ -572,13 +574,13 @@ def init(idx):
 
                 if attraction is not None:
                     set_query = {}
-                    if 'ciudad_id' not in attraction and place['ciudad_id'] is not None:
+                    if 'ciudad_id' not in attraction and 'ciudad_id' in place and place['ciudad_id'] is not None:
                         set_query['ciudad_id'] = place['ciudad_id']
 
-                    if 'departamento_id' not in attraction and place['departamento_id'] is not None:
+                    if 'departamento_id' not in attraction and 'departamento_id' in place and place['departamento_id'] is not None:
                         set_query['departamento_id'] = place['departamento_id']
 
-                    if 'pais_id' not in attraction and place['pais_id'] is not None:
+                    if 'pais_id' not in attraction and 'pais_id' in place and place['pais_id'] is not None:
                         set_query['pais_id'] = place['pais_id']
 
                     print(
