@@ -529,6 +529,7 @@ def init(idx):
 
             for place_element in place_elements:
                 place = init_data.copy()
+                start_time = time.time()
 
                 self.driver.execute_script("""
                     var element = document.querySelector(".U4rdx");
@@ -625,6 +626,8 @@ def init(idx):
 
                 place['created_at'] = datetime.now().strftime(
                     "%Y-%m-%d %H:%M:%S")
+
+                place['elapsed_time'] = time.time() - start_time
                 self.client.atracciones.insert_one(place)
 
                 print(
