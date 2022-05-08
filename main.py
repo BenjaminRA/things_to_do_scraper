@@ -218,7 +218,7 @@ def init(idx):
                 'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].find(
                 query).sort('priority', 1).limit(args.chunck))
 
-            # random.shuffle(ciudades)
+            random.shuffle(ciudades)
 
             return ciudades
 
