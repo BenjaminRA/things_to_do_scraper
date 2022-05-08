@@ -582,7 +582,7 @@ def init(idx):
                 ActionChains(self.driver).move_to_element(
                     place_element).perform()
 
-                del self.driver.requests
+                self.driver.backend.storage.clear_requests()
 
                 place_element.click()
 
@@ -726,6 +726,9 @@ def init(idx):
                 self.init_driver()
                 if self.scrape_territory(territory):
                     self.set_scraped(territory)
+
+                self.driver.backend.storage.clear_requests()
+                self.driver.backend.storage.cleanup()
                 self.driver.close()
 
         def run(self):
