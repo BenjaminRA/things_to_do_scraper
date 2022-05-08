@@ -77,29 +77,27 @@ class MapsScraper():
             if self.verbose:
                 print(f'web not found')
 
-    def get_telefono(self):
+    def get_telf(self):
         try:
             # element = self.driver.find_elements(
             #     By.CSS_SELECTOR, 'button[data-item-id^="phone:tel:"] .Io6YTe')
 
             # if len(element) > 0:
             #     element = element[0]
-            #     self.data[f'telefono'] = element.text
-            self.data[f'telefono'] = self.json_data[178][0][0]
+            #     self.data[f'telf'] = element.text
+            self.data[f'telf'] = self.json_data[178][0][0]
         except Exception as e:
             if self.verbose:
-                print(f'telefono not found')
+                print(f'telf not found')
 
-    def get_horarios(self):
+    def get_workingH(self):
         try:
             element = self.driver.find_elements(
-                By.CSS_SELECTOR, '.LJKBpe-Tswv1b-hour-text')
+                By.CSS_SELECTOR, 'img[aria-label="Horario"]')
 
             if len(element) > 0:
                 element = element[0]
                 element.click()
-
-                temp = {}
 
                 days_map = {
                     'lunes': 'monday',
@@ -120,42 +118,115 @@ class MapsScraper():
                     'sunday': 'sunday',
                 }
 
+                days_number_map = {
+                    'monday': 1,
+                    'tuesday': 2,
+                    'wednesday': 3,
+                    'thursday': 4,
+                    'friday': 5,
+                    'saturday': 6,
+                    'sunday': 7,
+                }
+
                 days = self.driver.find_elements(
                     By.CSS_SELECTOR, '.eK4R0e.tfUnhc tr')
+
+                def extract_date_range(value):
+                    if len(value) > 1:
+                        return {
+                            'inicio': value[0].split('–')[0].strip(),
+                            'fin': value[1].split('–')[1].strip(),
+                            'gap': {
+                                'inicio': value[0].split('–')[1].strip(),
+                                'fin': value[1].split('–')[0].strip()
+                            }
+                        }
+                    else:
+                        if '24 hours' in value[0] or '24 horas' in value[0]:
+                            return {
+                                'inicio': '00:00',
+                                'fin': '23:59',
+                                'gap': {}
+                            }
+                        else:
+                            return {
+                                'inicio': value[0].split('–')[0].strip(),
+                                'fin': value[0].split('–')[1].strip(),
+                                'gap': {}
+                            }
+
+                temp = {}
+
+                start_range = ''
+                value = []
+                last_day = 1
+
+                days = sorted(
+                    days, key=lambda x: days_number_map[days_map[x.find_element(
+                        By.CSS_SELECTOR, '.ylH6lf div:first-child').text.lower().strip()]])
 
                 for day in days:
                     day_name = day.find_element(
                         By.CSS_SELECTOR, '.ylH6lf div:first-child').text.lower().strip()
-
                     day_times = day.find_elements(
                         By.CSS_SELECTOR, '.mxowUb .G8aQO')
-                    day_time = ' - '.join(
-                        list(map(lambda x: x.text.lower().strip(), day_times)))
+                    day_times = list(
+                        map(lambda x: x.text.lower().strip(), day_times))
+                    aux = ' '.join(day_times).lower()
+                    day_number = days_number_map[days_map[day_name]]
+                    last_day = day_number
 
-                    temp[days_map[day_name]] = day_time
+                    if len(temp) == 0 and ('cerrado' in aux or 'closed' in aux):
+                        continue
 
-                self.data['horarios'] = temp
+                    # start new range
+                    if not ('cerrado' in aux or 'closed' in aux):
+                        if start_range == '':
+                            start_range = day_number
+
+                        if value == []:
+                            value = day_times
+
+                    # if range started, end range and start new one
+                    if value != day_times:
+                        temp[f"{start_range}_{day_number - 1}"] = extract_date_range(
+                            value)
+
+                        if 'cerrado' in aux or 'closed' in aux:
+                            start_range = ''
+                            value = []
+                        else:
+                            start_range = day_number
+                            value = day_times
+
+                if start_range != '':
+                    temp[f"{start_range}_{last_day}"] = extract_date_range(
+                        value)
+
+                self.data['workingH'] = temp
 
         except Exception as e:
             if self.verbose:
-                print(f'horarios not found')
+                print(e)
+                traceback.print_exc()
+                print(f'workingH not found')
 
     def get_coordenadas(self):
         try:
             self.data['lat'] = self.json_data[9][2]
-            self.data['lng'] = self.json_data[9][3]
+            self.data['lon'] = self.json_data[9][3]
 
         except Exception as e:
             if self.verbose:
                 print(f'coordenadas not found')
 
-    def get_rating(self):
+    def get_stars(self):
         try:
-            self.data['rating'] = self.json_data[4][7]
+            self.data['stars'] = self.json_data[4][7]
 
         except Exception as e:
             if self.verbose:
-                print(f'rating not found')
+                print(f'stars not found')
 
     def get_categorias(self):
         try:
@@ -270,19 +341,27 @@ class MapsScraper():
                 except Exception as e:
                     pass
 
-    def get_duracion(self, lang):
+    def get_duration(self, lang):
         try:
             avg_time_spent = self.json_data[117][0]
 
             text = avg_time_spent.split(
-                'People typically spend up to ' if lang == 'en' else 'Tiempo máximo de permanencia: ')[1]
+                'People typically spend up to ' if lang == 'en' else 'Tiempo máximo de permanencia: ')[1] \
+                .replace("\xa0", " ") \
+                .replace("horas", "hour") \
+                .replace("minuto", "minute")
 
-            self.data['duracion'] = text.replace("\xa0", " ").replace(
-                "horas", "hour").replace("minuto", "minute")
+            value = text.split(' ')[0].strip()
+            unidad = text.split(' ')[1].strip()
+
+            if 'minute' in unidad or 'min' in unidad:
+                value = float(value) / 60
+
+            self.data['duration'] = float(value)
 
         except Exception as e:
             if self.verbose:
-                print('duracion not found')
+                print('duration not found')
 
     def get_reviews(self, lang):
         # changed_page = False
@@ -324,7 +403,7 @@ class MapsScraper():
                     author = review.find_element(
                         By.CSS_SELECTOR, '.d4r55').text.strip()
 
-                    rating = review.find_element(By.CSS_SELECTOR, '.kvMYJc').get_attribute(
+                    stars = review.find_element(By.CSS_SELECTOR, '.kvMYJc').get_attribute(
                         'aria-label').strip().split('\xa0')[0]
 
                     more_button = review.find_elements(
@@ -337,7 +416,7 @@ class MapsScraper():
 
                     reviews.append({
                         'author': author,
-                        'rating': rating,
+                        'stars': stars,
                         'review': text
                     })
 
@@ -354,7 +433,7 @@ class MapsScraper():
         #             'div[class="onegoogle noprint app-sandbar-vasquette"]')
 
     def scrape(self, driver, place, lang, current_window_index=0):
-        if place['_id'] is None:
+        if place['googlePlaceId'] is None:
             return None
 
         main_windows_name = driver.window_handles[current_window_index]
@@ -371,7 +450,7 @@ class MapsScraper():
 
             self.driver.set_page_load_timeout(60)
             self.driver.get(
-                f"https://www.google.com/maps/place/?q=place_id:{place['_id']}&hl={'en' if lang == 'en' else 'es-419'}")
+                f"https://www.google.com/maps/place/?q=place_id:{place['googlePlaceId']}&hl={'en' if lang == 'en' else 'es-419'}")
 
             WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located((By.CSS_SELECTOR, '.lMbq3e')))
@@ -386,15 +465,15 @@ class MapsScraper():
                 'direccion_es': None,
                 'direccion_en': None,
                 'web': None,
-                'telefono': None,
+                'telf': None,
                 'email': None,
                 'lat': None,
-                'lng': None,
+                'lon': None,
                 'imagenes': [],
-                'duracion': None,
-                'rating': None,
+                'duration': None,
+                'stars': None,
                 'costos': [],
-                'horarios': [],
+                'workingH': {},
                 'reviews_en': [],
                 'reviews_es': [],
                 'categorias': []
@@ -403,20 +482,20 @@ class MapsScraper():
             if self.place['web'] is None:
                 self.get_web()
 
-            if self.place['rating'] is None:
-                self.get_rating()
+            if self.place['stars'] is None:
+                self.get_stars()
 
-            if self.place['telefono'] is None:
-                self.get_telefono()
+            if self.place['telf'] is None:
+                self.get_telf()
 
-            if self.place['horarios'] == []:
-                self.get_horarios()
+            if self.place['workingH'] == {} and lang == 'es':
+                self.get_workingH()
 
-            if self.place['lat'] is None or self.place['lng'] is None:
+            if self.place['lat'] is None or self.place['lon'] is None:
                 self.get_coordenadas()
 
-            if self.place['duracion'] is None:
-                self.get_duracion(self.lang)
+            if self.place['duration'] is None:
+                self.get_duration(self.lang)
 
             if self.place['imagenes'] == []:
                 self.get_imagenes()

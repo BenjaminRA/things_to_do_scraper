@@ -8,6 +8,7 @@ import traceback
 from datetime import datetime
 from multiprocessing import Process
 from typing import final
+from bson import ObjectId
 from dotenv import load_dotenv
 from pymongo import InsertOne, UpdateOne
 from seleniumwire import webdriver
@@ -29,6 +30,10 @@ parser.add_argument('--threads', type=int, default=1,
                     help='Number of threads to run (default: 1)')
 parser.add_argument('--country', type=str, default='',
                     help='Country to scrape (default: it will scrape all countries)')
+parser.add_argument('--state', type=str, default='',
+                    help='State to scrape (default: it will scrape all states)')
+parser.add_argument('--city', type=str, default='',
+                    help='City to scrape (default: it will scrape all cities)')
 parser.add_argument('--priority', type=str, default='',
                     help='Scrape countries with specified priority (default: it will scrape all countries)')
 parser.add_argument('--chunck', type=int, default=100,
@@ -44,9 +49,9 @@ thread_count = args.threads
 
 threads = []
 
-PAIS_TERRITORY = 1
-DEPARTAMENTO_TERRITORY = 2
-CIUDAD_TERRITORY = 3
+COUNTRY_TERRITORY = 1
+STATE_TERRITORY = 2
+CITY_TERRITORY = 3
 
 load_dotenv()
 
@@ -102,29 +107,29 @@ def init(idx):
         def get_territory_type(self, territory):
             """
             Returns the territory type:
-            CIUDAD_TERRITORY, DEPARTAMENTO_TERRITORY or PAIS_TERRITORY
+            CITY_TERRITORY, STATE_TERRITORY or COUNTRY_TERRITORY
             """
-            if 'ciudad_id' in territory:
-                return CIUDAD_TERRITORY
+            if territory['city'] is not None:
+                return CITY_TERRITORY
 
-            elif 'departamento_id' in territory and 'ciudad_id' not in territory:
-                return DEPARTAMENTO_TERRITORY
+            elif territory['state'] is not None and territory['city'] is None:
+                return STATE_TERRITORY
 
             else:
-                return PAIS_TERRITORY
+                return COUNTRY_TERRITORY
 
         def get_territory_name(self, territory):
             """
             Returns the territory name, given the territory type.
             """
-            if territory['type'] == CIUDAD_TERRITORY:
-                return f"{territory['ciudad_nombre']} ({territory['departamento_nombre']}) ({territory['pais_nombre']})"
+            if territory['type'] == CITY_TERRITORY:
+                return f"{territory['city']} ({territory['state']}) ({territory['country']})"
 
-            elif territory['type'] == DEPARTAMENTO_TERRITORY:
-                return f"{territory['departamento_nombre']} ({territory['pais_nombre']})"
+            elif territory['type'] == STATE_TERRITORY:
+                return f"{territory['state']} ({territory['country']})"
 
             else:
-                return territory['pais_nombre']
+                return territory['country']
 
         def get_place_id(self, nombre_place):
             """
@@ -193,56 +198,47 @@ def init(idx):
             query = {'scraped': False}
 
             if args.country != '':
-                query['pais_nombre'] = args.country
+                query['country'] = args.country
+
+            if args.state != '':
+                query['state'] = args.state
+
+            if args.city != '':
+                query['city'] = args.city
 
             if args.priority != '':
                 query['priority'] = int(args.priority)
 
-            ciudades = list(self.client.ciudades.find(
-                query).sort('priority', 1).limit(args.chunck))
-            departamentos = list(self.client.departamentos.find(
-                query).sort('priority', 1).limit(args.chunck))
-            paises = list(self.client.paises.find(
+            ciudades = list(self.client[os.getenv(
+                'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].find(
                 query).sort('priority', 1).limit(args.chunck))
 
-            random.shuffle(ciudades)
-            random.shuffle(departamentos)
-            random.shuffle(paises)
+            # random.shuffle(ciudades)
 
-            return ciudades + departamentos + paises
+            return ciudades
 
         def check_territory_scraped(self, territory):
             """
             Returns True if the territory has been scraped, False otherwise.
             """
-            if territory['type'] == CIUDAD_TERRITORY:
-                return self.client.ciudades.find_one({'ciudad_id': territory['ciudad_id']})['scraped']
-
-            elif territory['type'] == DEPARTAMENTO_TERRITORY:
-                return self.client.departamentos.find_one({'departamento_id': territory['departamento_id']})['scraped']
-
-            else:
-                return self.client.paises.find_one({'pais_id': territory['pais_id']})['scraped']
+            aux = self.client[os.getenv(
+                'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].find_one({'_id': territory['_id']})
+            return 'scraped' in aux and aux['scraped']
 
         def fetch_attraction(self, attraction_id):
             """
-            Returns the attraction by _id.
+            Returns the attraction by googlePlaceId.
             """
-            return self.client.atracciones.find_one({'_id': attraction_id})
+            return self.client[os.getenv(
+                'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].find_one({'googlePlaceId': attraction_id})
 
         def set_scraped(self, territory):
             """
             Sets the place as scraped in the mongoDB database.
             """
-            if territory['type'] == CIUDAD_TERRITORY:
-                self.client.ciudades.update_one(
-                    {'ciudad_id': territory['ciudad_id']}, {'$set': {'scraped': True}})
-            elif territory['type'] == DEPARTAMENTO_TERRITORY:
-                self.client.departamentos.update_one(
-                    {'departamento_id': territory['departamento_id']}, {'$set': {'scraped': True}})
-            else:
-                self.client.paises.update_one(
-                    {'pais_id': territory['pais_id']}, {'$set': {'scraped': True}})
+            self.client[os.getenv(
+                'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].update_one({'_id': territory['_id']}, {
+                    '$set': {'scraped': True}})
 
             print(f"{self.get_territory_name(territory)} scraped")
 
@@ -269,12 +265,12 @@ def init(idx):
 
                 query = ''
 
-                if territory['type'] == CIUDAD_TERRITORY:
-                    query = territory['ciudad_nombre']
-                elif territory['type'] == DEPARTAMENTO_TERRITORY:
-                    query = territory['departamento_nombre']
+                if territory['type'] == CITY_TERRITORY:
+                    query = territory['city'] if lang == 'es' else territory['cityEn']
+                elif territory['type'] == STATE_TERRITORY:
+                    query = territory['state'] if lang == 'es' else territory['stateEn']
                 else:
-                    query = territory['pais_nombre']
+                    query = territory['country'] if lang == 'es' else territory['countryEn']
 
                 for letter in query:
                     action.send_keys(letter)
@@ -292,30 +288,30 @@ def init(idx):
                     return False
 
                 for suggestion in suggestions:
-                    if territory['type'] == PAIS_TERRITORY:
-                        if 'país' in suggestion.text.lower().strip():
+                    if territory['type'] == COUNTRY_TERRITORY:
+                        if ('país' if lang == 'es' else 'country') in suggestion.text.lower().strip():
                             match = suggestion
                             break
 
-                        if 'isla' in suggestion.text.lower().strip():
+                        if ('isla' if lang == 'es' else 'island') in suggestion.text.lower().strip():
                             match = suggestion
                             break
 
-                        if 'imperio' in suggestion.text.lower().strip():
+                        if ('imperio' if lang == 'es' else 'empire') in suggestion.text.lower().strip():
                             match = suggestion
                             break
 
-                        if 'república' in suggestion.text.lower().strip():
+                        if ('república' if lang == 'es' else 'republic') in suggestion.text.lower().strip():
                             match = suggestion
                             break
                     else:
-                        if 'departamento_nombre' in territory:
-                            if territory['departamento_nombre'].lower().strip() in suggestion.text.lower().strip():
+                        if territory['state'] is not None:
+                            if territory['state'].lower().strip() in suggestion.text.lower().strip():
                                 match = suggestion
                                 break
 
-                        if 'pais_nombre' in territory:
-                            if territory['pais_nombre'].lower().strip() in suggestion.text.lower().strip():
+                        if territory['country'] is not None:
+                            if territory['country'].lower().strip() in suggestion.text.lower().strip():
                                 match = suggestion
                                 break
 
@@ -335,7 +331,7 @@ def init(idx):
                     f"https://www.google.com/travel/things-to-do?hl={'en' if lang == 'en' else 'es-419'}&dest_mid={territory['dest_mid']}")
 
             try:
-                WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
+                WebDriverWait(self.driver, 15).until(EC.presence_of_element_located(
                     (By.CSS_SELECTOR, '.kQb6Eb')))
             except:
                 return False
@@ -382,16 +378,16 @@ def init(idx):
                     print('Descripcion Things To Do not found')
                 return None
 
-        def get_rating(self, place_element):
+        def get_stars(self, place_element):
             """
-            Retrieves the rating of the place from the place_element, where place_element is the element containing the place's info.
+            Retrieves the stars of the place from the place_element, where place_element is the element containing the place's info.
             """
             try:
                 return place_element.find_element(By.CSS_SELECTOR, '.KFi5wf.lA0BZ').text
 
             except:
                 if args.verbose:
-                    print('Rating not found')
+                    print('stars not found')
                 return None
 
         def get_imagenes(self):
@@ -447,8 +443,11 @@ def init(idx):
                     element.parentNode.removeChild(element);
             """)
 
+            WebDriverWait(self.driver, 30).until(
+                EC.presence_of_element_located((By.CSS_SELECTOR, f"div[data-card-id=\"{place['data_card_id']}\"]")))
+
             place_element = self.driver.find_element(
-                By.CSS_SELECTOR, f"div[data-card-id='{place['data_card_id']}']")
+                By.CSS_SELECTOR, f"div[data-card-id=\"{place['data_card_id']}\"]")
 
             ActionChains(self.driver).move_to_element(
                 place_element).perform()
@@ -471,8 +470,8 @@ def init(idx):
 
             if maps_data is not None:
                 for place_key in place.keys():
-                    if place[place_key] is None or place[place_key] == []:
-                        if place_key in maps_data and (maps_data[place_key] is not None or maps_data[place_key] != []):
+                    if place[place_key] is None or place[place_key] == [] or place[place_key] == {}:
+                        if place_key in maps_data and (maps_data[place_key] is not None or maps_data[place_key] != [] or maps_data[place_key] != {}):
                             place[place_key] = maps_data[place_key]
 
             if self.driver is not None:
@@ -480,7 +479,39 @@ def init(idx):
                 self.driver.switch_to.window(
                     window_name=main_windows_name)
 
-        def scrape_territory(self, territory):
+        def get_classes(self):
+            """
+            Returns the classes of the place.
+            """
+            return 'color-' + str(random.randint(1, 9))
+
+        def get_tags(self, place, territory):
+            """
+            Returns the tags of the place.
+            """
+
+            tags = []
+            if territory['city'] is not None:
+                tags.append(territory['city'].lower().strip())
+
+            if territory['state'] is not None:
+                tags.append(territory['state'].lower().strip())
+
+            if territory['country'] is not None:
+                tags.append(territory['country'].lower().strip())
+
+            if territory['cityEn'] is not None:
+                tags.append(territory['cityEn'].lower().strip())
+
+            if territory['stateEn'] is not None:
+                tags.append(territory['stateEn'].lower().strip())
+
+            if territory['countryEn'] is not None:
+                tags.append(territory['countryEn'].lower().strip())
+
+            return place['categorias'] + tags
+
+        def scrape_territory(self, territory, lang='en'):
             """
             Scrape the territory, provided that the territory has not been scraped yet.
             """
@@ -492,36 +523,42 @@ def init(idx):
                     f"{self.get_territory_name(territory)} already scraped")
                 return False
 
-            if not self.search_place(territory, 'es'):
+            if not self.search_place(territory, lang):
                 return True
 
             place_elements = self.driver.find_elements(
                 By.CSS_SELECTOR, '.kQb6Eb .f4hh3d')
 
             init_data = {
-                '_id': None,
+                'googlePlaceId': None,
                 'data_card_id': None,
                 'nombre_place_es': None,
                 'nombre_place_en': None,
+                'place': None,
+                'placeEn': None,
+                'stars': None,
                 'descripcion_ttt_es': None,
                 'descripcion_ttt_en': None,
-                'rating': None,
                 'descripcion_short_en': None,
                 'descripcion_short_es': None,
                 'descripcion_long_en': None,
                 'descripcion_long_es': None,
-                'direccion_es': None,
                 'direccion_en': None,
+                'direccion_es': None,
+                'title': None,
+                'titleEn': None,
+                'descriptionLarge': None,
+                'descriptionEn': None,
                 'web': None,
-                'telefono': None,
-                'email': None,
+                'telf': None,
+                'mail': None,
                 'lat': None,
-                'lng': None,
+                'lon': None,
                 'imagenes': [],
-                'duracion': None,
-                'rating': None,
+                'location': [],
+                'duration': None,
                 'costos': [],
-                'horarios': [],
+                'workingH': {},
                 'reviews_en': [],
                 'reviews_es': [],
                 'categorias': []
@@ -551,87 +588,128 @@ def init(idx):
                     place['data_card_id'] = place_element.get_attribute(
                         'data-card-id')
 
-                if place[f'nombre_place_es'] is None:
-                    place[f'nombre_place_es'] = self.get_nombre_place(
+                if place[f'nombre_place_{lang}'] is None:
+                    place[f'nombre_place_{lang}'] = self.get_nombre_place(
                         place_element)
 
-                if place[f'descripcion_ttt_es'] is None:
-                    place[f'descripcion_ttt_es'] = self.get_descripcion_ttt(
+                if place[f'descripcion_ttt_{lang}'] is None:
+                    place[f'descripcion_ttt_{lang}'] = self.get_descripcion_ttt(
                         place_element)
 
-                if place[f'rating'] is None:
-                    place[f'rating'] = self.get_rating(
+                if place[f'stars'] is None:
+                    place[f'stars'] = self.get_stars(
                         place_element)
 
                 if place[f'imagenes'] == []:
                     place[f'imagenes'] = self.get_imagenes()
 
-                if place[f'_id'] is None:
-                    place[f'_id'] = self.get_place_id(
-                        place[f'nombre_place_es'])
+                if place[f'googlePlaceId'] is None:
+                    place[f'googlePlaceId'] = self.get_place_id(
+                        place[f'nombre_place_{lang}'])
 
                 # If doesn't have google's place id, it means that the place does not have useful information
-                if place[f'_id'] is None:
+                if place[f'googlePlaceId'] is None:
                     continue
 
-                attraction = self.fetch_attraction(place['_id'])
+                attraction = self.fetch_attraction(place['googlePlaceId'])
 
                 if attraction is not None:
                     set_query = {}
-                    if 'ciudad_id' not in attraction and 'ciudad_id' in place and place['ciudad_id'] is not None:
-                        set_query['ciudad_id'] = place['ciudad_id']
+                    temp = attraction['location']
+                    if territory['_id'] not in temp:
+                        temp.append(territory['_id'])
 
-                    if 'departamento_id' not in attraction and 'departamento_id' in place and place['departamento_id'] is not None:
-                        set_query['departamento_id'] = place['departamento_id']
-
-                    if 'pais_id' not in attraction and 'pais_id' in place and place['pais_id'] is not None:
-                        set_query['pais_id'] = place['pais_id']
+                    set_query['location'] = temp
 
                     print(
-                        f"{place['_id']} {place['nombre_place_es']} already scraped")
+                        f"{place['googlePlaceId']} {place['nombre_place_es']} already scraped")
 
-                    self.client.atracciones.update_one({
-                        '_id': place['_id']
-                    }, {
-                        '$set': set_query
-                    })
+                    self.client[os.getenv(
+                        'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].update_one({
+                            '_id': attraction['_id']
+                        }, {
+                            '$set': set_query
+                        })
 
                     continue
 
                 maps_data = MapsScraper(args.verbose).scrape(
-                    self.driver, place, 'es')
+                    self.driver, place, lang)
 
                 if maps_data is not None:
                     for place_key in place.keys():
-                        if place[place_key] is None or place[place_key] == []:
-                            if place_key in maps_data and (maps_data[place_key] is not None or maps_data[place_key] != []):
+                        if place[place_key] is None or place[place_key] == [] or place[place_key] == {}:
+                            if place_key in maps_data and (maps_data[place_key] is not None or maps_data[place_key] != [] or maps_data[place_key] != {}):
                                 place[place_key] = maps_data[place_key]
 
-                self.scrape_by_language_new_tab(territory, place, 'en')
+                self.scrape_by_language_new_tab(
+                    territory, place, 'en' if lang == 'es' else 'es')
 
-                if territory['type'] == CIUDAD_TERRITORY:
-                    place['ciudad'] = territory['ciudad_id']
-                    self.client.atracciones.delete_many(
-                        {'ciudad_id': territory['ciudad_id']})
+                final = {}
 
-                elif territory['type'] == DEPARTAMENTO_TERRITORY:
-                    place['departamento_id'] = territory['departamento_id']
-                    self.client.atracciones.delete_many(
-                        {'departamento_id': territory['departamento_id']})
+                final['name'] = place['nombre_place_es']
+                final['nameEn'] = place['nombre_place_en']
+                final['place'] = place['direccion_es']
+                final['placeEn'] = place['direccion_en']
+                final['location'] = [territory['_id']]
+                final['stars'] = '' if place['stars'] is None else place['stars']
+                final['duration'] = 1 if place['duration'] is None else place['duration']
+                final['workingH'] = place['workingH']
+                final['tags'] = self.get_tags(place, territory)
+                final['classes'] = self.get_classes()
+                final['hide'] = False
+                final['lat'] = place['lat']
+                final['lon'] = place['lon']
+                final['web'] = '' if place['web'] is None else place['web']
+                final['mail'] = '' if place['mail'] is None else place['mail']
+                final['telf'] = '' if place['telf'] is None else place['telf']
+                final['createdAt'] = str(datetime.now())
+                final['updatedAt'] = str(datetime.now())
+                final['elapsed_time'] = time.time() - start_time
+                final['durationNull'] = place['duration'] is None
+                final['GoogleActivite'] = ''
+                final['googlePlaceId'] = place['googlePlaceId']
+                final['prices'] = {}
+                final['pricesEn'] = {}
+                final['priceType'] = '$'
+                final['reviews'] = place['reviews_es']
+                final['reviewsEn'] = place['reviews_en']
 
-                else:
-                    place['pais_id'] = territory['pais_id']
-                    self.client.atracciones.delete_many(
-                        {'pais_id': territory['pais_id']})
+                # ideal cases
+                if place['descripcion_ttt_es'] is not None:
+                    final['title'] = place['descripcion_ttt_es']
 
-                place['created_at'] = datetime.now().strftime(
-                    "%Y-%m-%d %H:%M:%S")
+                if place['descripcion_ttt_en'] is not None:
+                    final['titleEn'] = place['descripcion_ttt_en']
 
-                place['elapsed_time'] = time.time() - start_time
-                self.client.atracciones.insert_one(place)
+                if place['descripcion_long_es'] is not None:
+                    final['descriptionLarge'] = place['descripcion_long_es']
+
+                if place['descripcion_long_en'] is not None:
+                    final['descriptionEn'] = place['descripcion_long_en']
+
+                # edge cases
+                if final['title'] is None and place['descripcion_short_es'] is not None:
+                    final['title'] = place['descripcion_short_es']
+
+                if final['titleEn'] is None and place['descripcion_short_en'] is not None:
+                    final['titleEn'] = place['descripcion_short_en']
+
+                if final['title'] is None or final['title'] == '':
+                    final['title'] = final['name']
+
+                if final['titleEn'] is None or final['titleEn'] == '':
+                    final['titleEn'] = final['nameEn']
+
+                if len(place['imagenes']) > 0:
+                    final['urlImg'] = place['imagenes'][0]
+                    final['urlImages'] = place['imagenes']
+
+                self.client[os.getenv(
+                    'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].insert_one(final)
 
                 print(
-                    f"Scraped: \"{place['nombre_place_es']}\" from {self.get_territory_name(territory)}")
+                    f"Scraped: \"{final['title']}\" from {self.get_territory_name(territory)}")
 
             return True
 
@@ -670,5 +748,5 @@ if __name__ == "__main__":
         threads.append(Process(target=init, args=(i,)))
         threads[i].start()
 
-    while True:
-        pass
+    for i in range(thread_count):
+        threads[i].join()

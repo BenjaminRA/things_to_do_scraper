@@ -1,3 +1,7 @@
+# Cities database
+
+All the data of the cities, states and countries of the world has been provided by the [🌍 Countries States Cities Database](https://github.com/dr5hn/countries-states-cities-database).
+
 # Setting up from scratch
 
 ## Python
@@ -27,6 +31,7 @@ Create a `.env` file in the root folder of the project. Copy the following conte
 MONGODB_HOST=XXXXXXXXXX
 MONGODB_USER=XXXXXXXXXX
 MONGODB_PASSWORD=XXXXXXXXXX
+MONGODB_DBNAME=XXXXXXXXXX
 ```
 
 Replace the variable names with the credentials of the mongo database you want to use.
