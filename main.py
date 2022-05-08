@@ -35,7 +35,9 @@ parser.add_argument('--state', type=str, default='',
 parser.add_argument('--city', type=str, default='',
                     help='City to scrape (default: it will scrape all cities)')
 parser.add_argument('--priority', type=str, default='',
-                    help='Scrape countries with specified priority (default: it will scrape all countries)')
+                    help='Scrape places with specified priority (default: it will scrape all places)')
+parser.add_argument('--priority_lte', type=str, default='',
+                    help='Scrape places with greater priority (default: it will scrape all places)')
 parser.add_argument('--chunck', type=int, default=100,
                     help='Chunck size fetch from all three collections on the db. (default: 100 => 100 * 3 = 300)')
 parser.add_argument('--offset', type=int, default=0,
@@ -208,6 +210,9 @@ def init(idx):
 
             if args.priority != '':
                 query['priority'] = int(args.priority)
+
+            if args.priority_lte != '':
+                query['priority'] = {'$lte': int(args.priority_lte)}
 
             ciudades = list(self.client[os.getenv(
                 'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].find(
