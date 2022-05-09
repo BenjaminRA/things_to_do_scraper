@@ -619,17 +619,6 @@ def init(idx):
                 if place[f'googlePlaceId'] is None:
                     continue
 
-                if place[f'descripcion_ttt_{lang}'] is None:
-                    place[f'descripcion_ttt_{lang}'] = self.get_descripcion_ttt(
-                        place_element)
-
-                if place[f'stars'] is None:
-                    place[f'stars'] = self.get_stars(
-                        place_element)
-
-                if place[f'imagenes'] == []:
-                    place[f'imagenes'] = self.get_imagenes()
-
                 attraction = self.fetch_attraction(place['googlePlaceId'])
 
                 if attraction is not None:
@@ -641,7 +630,7 @@ def init(idx):
                     set_query['location'] = temp
 
                     print(
-                        f"{place['googlePlaceId']} {place['nombre_place_es']} already scraped")
+                        f"{place['googlePlaceId']} {place[f'nombre_place_{lang}']} already scraped")
 
                     self.client[os.getenv(
                         'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].update_one({
@@ -651,6 +640,17 @@ def init(idx):
                         })
 
                     continue
+
+                if place[f'descripcion_ttt_{lang}'] is None:
+                    place[f'descripcion_ttt_{lang}'] = self.get_descripcion_ttt(
+                        place_element)
+
+                if place[f'stars'] is None:
+                    place[f'stars'] = self.get_stars(
+                        place_element)
+
+                if place[f'imagenes'] == []:
+                    place[f'imagenes'] = self.get_imagenes()
 
                 maps_data = MapsScraper(args.verbose).scrape(
                     self.driver, place, lang)
@@ -728,7 +728,7 @@ def init(idx):
                     'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].insert_one(final)
 
                 print(
-                    f"Scraped: \"{final['title']}\" from {self.get_territory_name(territory)}")
+                    f"Scraped: \"{final['name']}\" from {self.get_territory_name(territory)}")
 
             return True
 
