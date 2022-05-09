@@ -111,6 +111,8 @@ def init(idx):
             self.driver = webdriver.Chrome(
                 chrome_options=options)
 
+            print('Scraper Version: 1.0.0')
+
         def get_territory_type(self, territory):
             """
             Returns the territory type:
