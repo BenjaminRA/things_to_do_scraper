@@ -93,6 +93,8 @@ def init(idx):
             """
             if self.driver is not None:
                 try:
+                    self.driver.backend.storage.clear_requests()
+                    self.driver.backend.storage.cleanup()
                     self.driver.close()
                 except:
                     pass
@@ -480,6 +482,7 @@ def init(idx):
                             place[place_key] = maps_data[place_key]
 
             if self.driver is not None:
+                self.driver.backend.storage.clear_requests()
                 self.driver.close()
                 self.driver.switch_to.window(
                     window_name=main_windows_name)
@@ -741,6 +744,8 @@ def init(idx):
                         traceback.print_exc()
                     if self.driver is not None:
                         try:
+                            self.driver.backend.storage.clear_requests()
+                            self.driver.backend.storage.cleanup()
                             self.driver.close()
                         except:
                             if args.verbose:
