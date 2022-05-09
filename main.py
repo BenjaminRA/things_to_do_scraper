@@ -91,7 +91,7 @@ def init(idx):
             """
             Initializes the chrome driver.
             """
-            print('Scraper Version: 1.7.0')
+            print('Scraper Version: 1.7.1')
             if self.driver is not None:
                 try:
                     try:
@@ -723,8 +723,13 @@ def init(idx):
                     final['urlImg'] = place['imagenes'][0]
                     final['urlImages'] = place['imagenes']
 
-                self.client[os.getenv(
-                    'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].insert_one(final)
+                try:
+                    self.client[os.getenv(
+                        'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].insert_one(final)
+                except Exception as e:
+                    print(e)
+                    print(final)
+                    continue
 
                 print(
                     f"Scraped: \"{final['name']}\" from {self.get_territory_name(territory)}")
