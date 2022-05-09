@@ -94,11 +94,6 @@ def init(idx):
             print('Scraper Version: 1.7.1')
             if self.driver is not None:
                 try:
-                    try:
-                        self.driver.backend.storage.clear_requests()
-                        self.driver.backend.storage.cleanup()
-                    except:
-                        pass
                     self.driver.close()
                 except:
                     pass
@@ -747,7 +742,6 @@ def init(idx):
 
                 try:
                     self.driver.backend.storage.clear_requests()
-                    self.driver.backend.storage.cleanup()
                 except:
                     pass
                 self.driver.close()
@@ -764,7 +758,6 @@ def init(idx):
                         try:
                             try:
                                 self.driver.backend.storage.clear_requests()
-                                self.driver.backend.storage.cleanup()
                             except:
                                 pass
                             self.driver.close()
