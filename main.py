@@ -485,7 +485,10 @@ def init(idx):
                             place[place_key] = maps_data[place_key]
 
             if self.driver is not None:
-                self.driver.backend.storage.clear_requests()
+                try:
+                    self.driver.backend.storage.clear_requests()
+                except:
+                    pass
                 self.driver.close()
                 self.driver.switch_to.window(
                     window_name=main_windows_name)
@@ -588,7 +591,10 @@ def init(idx):
                 ActionChains(self.driver).move_to_element(
                     place_element).perform()
 
-                self.driver.backend.storage.clear_requests()
+                try:
+                    self.driver.backend.storage.clear_requests()
+                except:
+                    pass
 
                 place_element.click()
 

@@ -509,7 +509,10 @@ class MapsScraper():
             self.get_reviews(self.lang)
 
             if self.driver is not None:
-                self.driver.backend.storage.clear_requests()
+                try:
+                    self.driver.backend.storage.clear_requests()
+                except:
+                    pass
                 self.driver.close()
                 self.driver.switch_to.window(window_name=main_windows_name)
 
@@ -522,7 +525,10 @@ class MapsScraper():
                 traceback.print_exc()
 
             if self.driver is not None:
-                self.driver.backend.storage.clear_requests()
+                try:
+                    self.driver.backend.storage.clear_requests()
+                except:
+                    pass
                 self.driver.close()
                 self.driver.switch_to.window(window_name=main_windows_name)
 
