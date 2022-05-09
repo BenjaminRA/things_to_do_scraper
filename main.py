@@ -93,8 +93,11 @@ def init(idx):
             """
             if self.driver is not None:
                 try:
-                    self.driver.backend.storage.clear_requests()
-                    self.driver.backend.storage.cleanup()
+                    try:
+                        self.driver.backend.storage.clear_requests()
+                        self.driver.backend.storage.cleanup()
+                    except:
+                        pass
                     self.driver.close()
                 except:
                     pass
@@ -730,8 +733,11 @@ def init(idx):
                 if self.scrape_territory(territory):
                     self.set_scraped(territory)
 
-                self.driver.backend.storage.clear_requests()
-                self.driver.backend.storage.cleanup()
+                try:
+                    self.driver.backend.storage.clear_requests()
+                    self.driver.backend.storage.cleanup()
+                except:
+                    pass
                 self.driver.close()
 
         def run(self):
@@ -744,8 +750,11 @@ def init(idx):
                         traceback.print_exc()
                     if self.driver is not None:
                         try:
-                            self.driver.backend.storage.clear_requests()
-                            self.driver.backend.storage.cleanup()
+                            try:
+                                self.driver.backend.storage.clear_requests()
+                                self.driver.backend.storage.cleanup()
+                            except:
+                                pass
                             self.driver.close()
                         except:
                             if args.verbose:
