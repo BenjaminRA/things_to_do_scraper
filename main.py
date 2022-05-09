@@ -630,7 +630,7 @@ def init(idx):
                     set_query['location'] = temp
 
                     print(
-                        f"{place['googlePlaceId']} {place[f'nombre_place_{lang}']} already scraped")
+                        f"{place['googlePlaceId']} \"{place[f'nombre_place_{lang}']}\" already scraped")
 
                     self.client[os.getenv(
                         'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].update_one({
