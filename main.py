@@ -595,6 +595,14 @@ def init(idx):
                 WebDriverWait(self.driver, 30).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, '.U4rdx c-wiz')))
 
+                if place[f'googlePlaceId'] is None:
+                    place[f'googlePlaceId'] = self.get_place_id(
+                        place[f'nombre_place_{lang}'])
+
+                # If doesn't have google's place id, it means that the place does not have useful information
+                if place[f'googlePlaceId'] is None:
+                    continue
+
                 if place['data_card_id'] is None:
                     place['data_card_id'] = place_element.get_attribute(
                         'data-card-id')
@@ -613,14 +621,6 @@ def init(idx):
 
                 if place[f'imagenes'] == []:
                     place[f'imagenes'] = self.get_imagenes()
-
-                if place[f'googlePlaceId'] is None:
-                    place[f'googlePlaceId'] = self.get_place_id(
-                        place[f'nombre_place_{lang}'])
-
-                # If doesn't have google's place id, it means that the place does not have useful information
-                if place[f'googlePlaceId'] is None:
-                    continue
 
                 attraction = self.fetch_attraction(place['googlePlaceId'])
 
