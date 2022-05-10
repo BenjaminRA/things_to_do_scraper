@@ -40,8 +40,8 @@ parser.add_argument('--priority_lte', type=str, default='',
                     help='Scrape places with greater priority (default: it will scrape all places)')
 parser.add_argument('--group', type=str, default='',
                     help='Scrape places from specific group (default: it will scrape all places)')
-parser.add_argument('--chunck', type=int, default=100,
-                    help='Chunck size fetch from all three collections on the db. (default: 100 => 100 * 3 = 300)')
+# parser.add_argument('--chunck', type=int, default=100,
+#                     help='Chunck size fetch from all three collections on the db. (default: 100 => 100 * 3 = 300)')
 parser.add_argument('--offset', type=int, default=0,
                     help='Windows X position offset. (default: 0)')
 parser.add_argument('--verbose', type=bool, default=False,
@@ -93,7 +93,7 @@ def init(idx):
             """
             Initializes the chrome driver.
             """
-            print('Scraper Version: 1.7.3')
+            print('Scraper Version: 1.7.4')
             if self.driver is not None:
                 try:
                     self.driver.close()
@@ -222,7 +222,7 @@ def init(idx):
 
             ciudades = list(self.client[os.getenv(
                 'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].find(
-                query).sort('priority', 1).limit(args.chunck))
+                query).sort('priority', 1))
 
             random.shuffle(ciudades)
 

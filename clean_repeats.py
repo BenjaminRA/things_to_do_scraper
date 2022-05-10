@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 mongodb = pymongo.MongoClient(
-    f"mongodb+srv://{os.getenv('MONGODB_USER')}:{os.getenv('MONGODB_PASSWORD')}@mining.uqmew.mongodb.net")
+    f"mongodb+srv://{os.getenv('MONGODB_USER')}:{os.getenv('MONGODB_PASSWORD')}@mining.9enqq.mongodb.net")
 
 
 def delete_repeated_attractions(place):

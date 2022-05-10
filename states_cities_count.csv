@@ -1,0 +1,251 @@
+cities,country,states
+92,Afghanistan,33
+130,Albania,47
+0,Aland Islands,0
+293,Algeria,58
+10,Andorra,7
+48,Angola,17
+0,Anguilla,0
+0,Antarctica,0
+308,Armenia,11
+963,Argentina,24
+9,Antigua And Barbuda,8
+0,American Samoa,0
+0,Aruba,0
+4152,Australia,8
+2361,Austria,9
+141,Bangladesh,70
+178,Azerbaijan,75
+9,Bahrain,5
+21,The Bahamas,42
+329,Belarus,7
+550,Belgium,13
+7,Barbados,11
+75,Botswana,10
+0,Bouvet Island,0
+13,Belize,6
+228,Bolivia,9
+24,Bhutan,19
+0,Bermuda,9
+232,Bosnia and Herzegovina,13
+36,Benin,12
+5640,Brazil,27
+9,Brunei,4
+0,British Indian Ocean Territory,0
+504,Bulgaria,28
+92,Burkina Faso,57
+106,Cambodia,24
+17,Burundi,18
+139,Cameroon,10
+1079,Canada,13
+0,Cayman Islands,0
+346,Chile,16
+24,Cape Verde,23
+43,Central African Republic,17
+41,Chad,23
+1297,China,34
+0,Christmas Island,0
+0,Cocos (Keeling) Islands,0
+1123,Colombia,33
+88,Comoros,3
+69,Democratic Republic of the Congo,26
+17,Congo,12
+0,Cook Islands,0
+159,Costa Rica,7
+85,"Cote D'Ivoire (Ivory Coast)",31
+664,Croatia,21
+95,Cyprus,6
+187,Cuba,16
+1355,Czech Republic,90
+17,Dominica,10
+140,Egypt,27
+12,Djibouti,6
+50,East Timor,12
+429,Denmark,5
+207,Dominican Republic,31
+115,Ecuador,24
+162,Estonia,15
+11,Eritrea,6
+144,Ethiopia,11
+24,Equatorial Guinea,9
+100,El Salvador,14
+402,Finland,21
+0,Faroe Islands,0
+0,Falkland Islands,0
+20,Fiji Islands,19
+8894,France,123
+112,Georgia,14
+7097,Germany,16
+0,French Guiana,0
+28,Gabon,9
+0,French Polynesia,0
+0,French Southern Territories,0
+104,Gambia The,6
+121,Ghana,16
+1025,Greece,38
+0,Gibraltar,0
+0,Guadeloupe,0
+54,Guinea,40
+0,Guernsey and Alderney,0
+14,Guyana,10
+0,Heard Island and McDonald Islands,0
+14,Guinea-Bissau,11
+545,Honduras,18
+0,Greenland,0
+382,Guatemala,21
+124,Haiti,10
+0,Guam,0
+7,Grenada,7
+1005,Hungary,42
+0,Hong Kong S.A.R.,18
+4242,India,36
+74,Iceland,8
+889,Indonesia,34
+1090,Iran,31
+372,Ireland,29
+9948,Italy,128
+150,Israel,6
+81,Iraq,18
+840,Jamaica,14
+1671,Japan,47
+260,Kazakhstan,17
+0,Jersey,0
+82,Jordan,12
+309,South Korea,17
+110,Kenya,47
+53,Kyrgyzstan,9
+80,North Korea,11
+125,Latvia,118
+38,Kiribati,3
+25,Kuwait,6
+76,Laos,19
+9,Madagascar,6
+144,Luxembourg,15
+11,Liechtenstein,11
+51,Libya,21
+26,Lebanon,8
+197,Macedonia,84
+12,Lesotho,10
+18,Liberia,15
+129,Lithuania,69
+0,Macau S.A.R.,0
+68,Malta,67
+61,Malawi,30
+179,Malaysia,16
+21,Maldives,26
+47,Mali,11
+0,Mayotte,0
+9174,Mexico,32
+0,Marshall Islands,2
+0,Man (Isle of),0
+97,Mauritius,17
+0,Martinique,0
+15,Mauritania,15
+72,Moldova,36
+81,Micronesia,4
+0,Monaco,3
+48,Namibia,14
+0,"Bonaire, Sint Eustatius and Saba",0
+1740,Netherlands,15
+38,Mozambique,11
+74,Myanmar,15
+55,Nepal,19
+38,Mongolia,21
+224,Morocco,87
+34,Montenegro,22
+0,Montserrat,0
+7,Nauru,14
+158,New Zealand,17
+668,Norway,21
+0,New Caledonia,0
+70,Niger,7
+0,Niue,0
+424,Nigeria,37
+0,Norfolk Island,0
+0,Northern Mariana Islands,0
+155,Nicaragua,17
+600,Panama,13
+458,Pakistan,8
+0,Palestinian Territory Occupied,0
+28,Oman,13
+16,Palau,16
+140,Paraguay,17
+483,Peru,25
+101,Papua new Guinea,21
+6520,Philippines,97
+0,Pitcairn Island,0
+3126,Poland,16
+1313,Portugal,20
+0,Reunion,0
+0,Puerto Rico,0
+8081,Romania,42
+15,Qatar,8
+5545,Russia,84
+0,Saint Helena,0
+13,Saint Kitts And Nevis,15
+12,Rwanda,5
+481,Saint Lucia,12
+9,San Marino,9
+0,Saint-Martin (French part),0
+9,Saint Vincent And The Grenadines,6
+563,Saudi Arabia,13
+5,Sao Tome and Principe,2
+0,Saint-Barthelemy,0
+0,Saint Pierre and Miquelon,0
+20,Samoa,11
+73,Senegal,14
+233,Slovakia,8
+2,Singapore,5
+8,Seychelles,24
+334,Serbia,26
+90,Sierra Leone,4
+311,Slovenia,211
+6692,Spain,28
+7,Solomon Islands,10
+1,South Sudan,10
+0,South Georgia,0
+46,Somalia,16
+314,South Africa,9
+147,Sri Lanka,33
+71,Sudan,18
+800,Sweden,20
+13,Suriname,10
+0,Svalbard And Jan Mayen Islands,0
+34,Swaziland,4
+1506,Switzerland,26
+142,Syria,14
+70,Tajikistan,4
+299,Tanzania,31
+1240,Thailand,78
+40,Taiwan,22
+8,Tonga,5
+22,Togo,5
+25,Trinidad And Tobago,16
+0,Tokelau,0
+134,Tunisia,23
+1347,Turkey,81
+9,Tuvalu,8
+91,Uganda,125
+30,Turkmenistan,6
+0,Turks And Caicos Islands,0
+1804,Ukraine,26
+3871,United Kingdom,247
+39,United Arab Emirates,7
+19821,United States,66
+135,Uzbekistan,14
+0,Vatican City State (Holy See),0
+155,Uruguay,19
+7,Vanuatu,6
+135,Venezuela,25
+0,United States Minor Outlying Islands,0
+467,Vietnam,63
+342,Yemen,21
+0,Wallis And Futuna Islands,0
+0,Virgin Islands (British),0
+0,Virgin Islands (US),0
+0,Western Sahara,0
+71,Zambia,10
+0,Kosovo,7
+0,Curaçao,0
+109,Zimbabwe,10
+0,Sint Maarten (Dutch part),0
