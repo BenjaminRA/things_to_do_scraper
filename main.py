@@ -532,18 +532,20 @@ def init(idx):
             """
             repeated_attractions = list(self.client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].find({
                 'googlePlaceId': place['googlePlaceId']}))
-            max_locations = 0
-            max_id = None
-            for repeated_attraction in repeated_attractions:
-                if len(repeated_attraction['location']) > max_locations:
-                    max_locations = len(repeated_attraction['location'])
-                    max_id = repeated_attraction['_id']
 
-            if max_id is not None:
+            if len(repeated_attractions) > 1:
+                max_locations = 0
+                max_id = None
                 for repeated_attraction in repeated_attractions:
-                    if repeated_attraction['_id'] != max_id:
-                        self.client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].delete_one(
-                            {'_id': repeated_attraction['_id']})
+                    if len(repeated_attraction['location']) > max_locations:
+                        max_locations = len(repeated_attraction['location'])
+                        max_id = repeated_attraction['_id']
+
+                if max_id is not None:
+                    for repeated_attraction in repeated_attractions:
+                        if repeated_attraction['_id'] != max_id:
+                            self.client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].delete_one(
+                                {'_id': repeated_attraction['_id']})
 
         def check_attraction_repeated(self, place, territory, lang):
             """
