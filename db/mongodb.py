@@ -9,6 +9,6 @@ def get_client():
         f"mongodb+srv://{os.getenv('MONGODB_USER')}:{os.getenv('MONGODB_PASSWORD')}@{os.getenv('MONGODB_HOST')}")
 
     print(
-        f"mongodb+srv://{os.getenv('MONGODB_USER')}:<password>@{os.getenv('MONGODB_HOST')}")
+        f"mongodb+srv://<username>:<password>@{os.getenv('MONGODB_HOST')}")
 
     return mongodb['mining']
