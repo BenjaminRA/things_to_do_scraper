@@ -6,7 +6,7 @@ adminsplaces_news.json
 ciudadcoors_news.json
 TODO
 requests.txt
-
+*.json
 __pycache__
 */__pycache__
 .vscode

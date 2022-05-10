@@ -38,6 +38,8 @@ parser.add_argument('--priority', type=str, default='',
                     help='Scrape places with specified priority (default: it will scrape all places)')
 parser.add_argument('--priority_lte', type=str, default='',
                     help='Scrape places with greater priority (default: it will scrape all places)')
+parser.add_argument('--group', type=str, default='',
+                    help='Scrape places from specific group (default: it will scrape all places)')
 parser.add_argument('--chunck', type=int, default=100,
                     help='Chunck size fetch from all three collections on the db. (default: 100 => 100 * 3 = 300)')
 parser.add_argument('--offset', type=int, default=0,
@@ -214,6 +216,9 @@ def init(idx):
 
             if args.priority_lte != '':
                 query['priority'] = {'$lte': int(args.priority_lte)}
+
+            if args.group != '':
+                query['group'] = args.group
 
             ciudades = list(self.client[os.getenv(
                 'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].find(
@@ -521,6 +526,55 @@ def init(idx):
 
             return place['categorias'] + tags
 
+        def delete_repeated_attractions(self, place):
+            """
+            Deletes the repeated attractions from the place.
+            """
+            repeated_attractions = list(self.client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].find({
+                'googlePlaceId': place['googlePlaceId']}))
+            max_locations = 0
+            max_id = None
+            for repeated_attraction in repeated_attractions:
+                if len(repeated_attraction['location']) > max_locations:
+                    max_locations = len(repeated_attraction['location'])
+                    max_id = repeated_attraction['_id']
+
+            if max_id is not None:
+                for repeated_attraction in repeated_attractions:
+                    if repeated_attraction['_id'] != max_id:
+                        self.client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].delete_one(
+                            {'_id': repeated_attraction['_id']})
+
+        def check_attraction_repeated(self, place, territory, lang):
+            """
+            Checks if the attraction has been inserted.
+            """
+            attraction = self.fetch_attraction(place['googlePlaceId'])
+
+            if attraction is not None:
+                self.delete_repeated_attractions(self, place)
+
+                set_query = {}
+                temp = attraction['location']
+                if territory['_id'] not in temp:
+                    temp.append(territory['_id'])
+
+                set_query['location'] = temp
+
+                print(
+                    f"{place['googlePlaceId']} \"{place[f'nombre_place_{lang}']}\" already scraped")
+
+                self.client[os.getenv(
+                    'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].update_one({
+                        '_id': attraction['_id']
+                    }, {
+                        '$set': set_query
+                    })
+
+                return True
+
+            return False
+
         def scrape_territory(self, territory, lang='en'):
             """
             Scrape the territory, provided that the territory has not been scraped yet.
@@ -613,26 +667,7 @@ def init(idx):
                 if place[f'googlePlaceId'] is None:
                     continue
 
-                attraction = self.fetch_attraction(place['googlePlaceId'])
-
-                if attraction is not None:
-                    set_query = {}
-                    temp = attraction['location']
-                    if territory['_id'] not in temp:
-                        temp.append(territory['_id'])
-
-                    set_query['location'] = temp
-
-                    print(
-                        f"{place['googlePlaceId']} \"{place[f'nombre_place_{lang}']}\" already scraped")
-
-                    self.client[os.getenv(
-                        'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].update_one({
-                            '_id': attraction['_id']
-                        }, {
-                            '$set': set_query
-                        })
-
+                if self.check_attraction_repeated(place, territory, lang):
                     continue
 
                 if place[f'descripcion_ttt_{lang}'] is None:
@@ -724,7 +759,9 @@ def init(idx):
                 except Exception as e:
                     print(e)
                     print(final)
-                    continue
+                    time.sleep(2)
+                    if self.check_attraction_repeated(place, territory, lang):
+                        continue
 
                 print(
                     f"Scraped: \"{final['name']}\" from {self.get_territory_name(territory)}")
