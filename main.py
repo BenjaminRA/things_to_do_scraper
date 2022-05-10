@@ -552,7 +552,7 @@ def init(idx):
             attraction = self.fetch_attraction(place['googlePlaceId'])
 
             if attraction is not None:
-                self.delete_repeated_attractions(self, place)
+                self.delete_repeated_attractions(place)
 
                 set_query = {}
                 temp = attraction['location']
