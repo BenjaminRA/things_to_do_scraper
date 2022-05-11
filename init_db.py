@@ -55,7 +55,14 @@ def init(idx):
 
             return places
 
+        def check_if_cached(self, word):
+            return self.client.translations.find_one({'word': word})
+
         def get_translation(self, word):
+            cached = self.check_if_cached(word)
+            if cached is not None:
+                return cached['translation']
+
             input_word = self.driver.find_element(
                 By.CSS_SELECTOR, 'textarea')
 
@@ -81,6 +88,11 @@ def init(idx):
 
             translated_word = self.driver.find_element(
                 By.CSS_SELECTOR, '.Q4iAWc').text.strip()
+
+            self.client.translations.insert_one({
+                'word': word,
+                'translation': translated_word
+            })
 
             return translated_word
 
