@@ -315,6 +315,10 @@ def init(idx):
                         if ('república' if lang == 'es' else 'republic') in suggestion.text.lower().strip():
                             match = suggestion
                             break
+
+                        if ('territorio' if lang == 'es' else 'territory') in suggestion.text.lower().strip():
+                            match = suggestion
+                            break
                     else:
                         if territory['state'] is not None:
                             if territory['state'].lower().strip() in suggestion.text.lower().strip():
