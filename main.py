@@ -596,6 +596,8 @@ def init(idx):
             if not self.search_place(territory, lang):
                 return True
 
+            time.sleep(2)
+
             place_elements = self.driver.find_elements(
                 By.CSS_SELECTOR, '.kQb6Eb .f4hh3d')
 
