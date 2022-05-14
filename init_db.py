@@ -38,7 +38,7 @@ def init(idx):
     class TranslatorThread():
 
         def __init__(self, idx):
-            self.url = 'https://www.google.com/travel/things-to-do?hl=es-419&dest_mid=%2Fm%2F01qgv7'
+            self.url = 'https://www.deepl.com/translator#en/es/'
             self.driver = None
             self.done = False
             self.daemon = True
@@ -63,31 +63,12 @@ def init(idx):
             if cached is not None:
                 return cached['translation']
 
-            input_word = self.driver.find_element(
-                By.CSS_SELECTOR, 'textarea')
+            self.driver.get(f'https://www.deepl.com/translator#en/es/{word}')
 
-            input_word.clear()
-            input_word.send_keys(Keys.CONTROL + "a")
-            input_word.send_keys(Keys.DELETE)
-
-            action = ActionChains(self.driver)
-            action.double_click(input_word)
-
-            for letter in word:
-                action.send_keys(letter)
-            action.perform()
-
-            self.driver.execute_script("""
-                var element = document.querySelector(".Q4iAWc");
-                if (element)
-                    element.parentNode.removeChild(element);
-            """)
-
-            WebDriverWait(self.driver, 10).until(EC.presence_of_element_located(
-                (By.CSS_SELECTOR, '.Q4iAWc')))
-
-            translated_word = self.driver.find_element(
-                By.CSS_SELECTOR, '.Q4iAWc').text.strip()
+            translated_word = ''
+            while translated_word == '':
+                translated_word = self.driver.find_elements(
+                    By.CSS_SELECTOR, 'textarea')[1].get_attribute('value')
 
             self.client.translations.insert_one({
                 'word': word,
@@ -124,7 +105,6 @@ def init(idx):
             self.places = self.get_places()
             self.done = len(self.places) == 0
             self.driver = webdriver.Chrome(chrome_options=self.options)
-            self.driver.get('https://translate.google.cl/?sl=en&tl=es')
 
             for place in self.places:
                 if not self.client[os.getenv(
