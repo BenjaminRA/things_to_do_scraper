@@ -62,13 +62,15 @@ def init(idx):
                 'lat': city['lat'],
                 'lon': city['lon']
             }
-            fullName = city['city']
-            if city['state'] is not None:
-                fullName += ', ' + city['state']
-            if city['country'] is not None:
-                fullName += ', ' + city['country']
+            fullName = []
+            if 'city' in city and city['city'] is not None:
+                fullName.append(city['city'])
+            if 'state' in city and city['state'] is not None:
+                fullName.append(city['state'])
+            if 'country' in city and city['country'] is not None:
+                fullName.append(city['country'])
 
-            city['fullName'] = fullName
+            city['fullName'] = ', '.join(fullName)
             city['fixed'] = True
 
             client[os.getenv('MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].replace_one(
