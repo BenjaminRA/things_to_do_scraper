@@ -43,7 +43,7 @@ def init(idx):
         def get_places(self, client):
             places = list(client[os.getenv(
                 'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].find(
-                {'fixed': False}).limit(5000))
+                {'fixed': False}).limit(5))
             random.shuffle(places)
 
             return places
@@ -51,7 +51,7 @@ def init(idx):
         def get_cities(self, client):
             places = list(client[os.getenv(
                 'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].find(
-                {'fixed': False}).limit(5000))
+                {'fixed': False}).limit(5))
             random.shuffle(places)
 
             return places
@@ -139,7 +139,7 @@ def init(idx):
                     for place in places:
                         self.fix_place(place, client)
 
-                    not_done += len(cities) + len(places)
+                    not_done = len(cities) + len(places)
 
             self.done = True
 
