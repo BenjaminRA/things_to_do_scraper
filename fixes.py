@@ -30,6 +30,8 @@ args = parser.parse_args()
 thread_count = args.threads
 
 threads = []
+NOT_FIXED_QUERY = {'$or': [{'fixed': False},
+                           {'incomplete': {'$exists': False}}]}
 
 
 def init(idx):
@@ -42,8 +44,7 @@ def init(idx):
 
         def get_places(self, client):
             places = list(client[os.getenv(
-                'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].find(
-                {'fixed': False}).limit(500))
+                'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].find(NOT_FIXED_QUERY).limit(500))
             random.shuffle(places)
 
             return places
@@ -76,40 +77,112 @@ def init(idx):
             client[os.getenv('MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].replace_one(
                 {'_id': city['_id'], 'fixed': False}, city)
 
+        def get_urlId(self, place):
+            urlId = []
+            codeId = str(place['_id'])[-5:]
+
+            if 'name' in place and place['name'] is not None:
+                esId = f"{codeId}-{place['name'].replace(' ', '-')}"
+                urlId.append(esId)
+
+            if 'nameEn' in place and place['nameEn'] is not None:
+                enId = f"{codeId}-{place['nameEn'].replace(' ', '-')}"
+                if enId != esId:
+                    urlId.append(enId)
+
+            return urlId
+
+        def add_zero_to_time(self, time):
+            if len(time) == 4:
+                return '0' + time
+            return time
+
         def fix_place(self, place, client):
-            if place['workingH'] == {}:
-                place['workingH'] = {
-                    '2022-05-05': {
-                        '1_7': {
-                            'start': '0:00',
-                            'end': '23:59',
-                            'gap': {}
-                        }
+            incomplete_fields = []
+
+            workingH_null = {
+                '2022-05-05': {
+                    '1_7': {
+                        'start': '0:00',
+                        'end': '23:59',
+                        'gap': {}
                     }
                 }
+            }
+            workingH_placeholder = {
+                '2022-05-05': {
+                    '1_7': {
+                        'start': '00:00',
+                        'end': '00:00',
+                        'gap': {}
+                    }
+                }
+            }
+            if place['fixed']:
+                if place['workingH'] == workingH_null:
+                    place['workingH'] = workingH_placeholder
+                    incomplete_fields.append('workingH')
+                else:
+                    for key in place['workingH']['2022-05-05'].keys():
+                        place['workingH']['2022-05-05'][key]['start'] = self.add_zero_to_time(
+                            place['workingH']['2022-05-05'][key]['start'])
+                        place['workingH']['2022-05-05'][key]['end'] = self.add_zero_to_time(
+                            place['workingH']['2022-05-05'][key]['end'])
+
+                        if place['workingH']['2022-05-05'][key]['gap'] != {}:
+                            place['workingH']['2022-05-05'][key]['gap']['start'] = self.add_zero_to_time(
+                                place['workingH']['2022-05-05'][key]['gap']['start'])
+                            place['workingH']['2022-05-05'][key]['gap']['end'] = self.add_zero_to_time(
+                                place['workingH']['2022-05-05'][key]['gap']['end'])
             else:
-                for key in place['workingH'].keys():
-                    place['workingH'][key]['start'] = place['workingH'][key]['inicio']
-                    place['workingH'][key]['end'] = place['workingH'][key]['fin']
-                    for sub_key in place['workingH'][key]['gap'].keys():
-                        place['workingH'][key]['gap'][sub_key]['start'] = place['workingH'][key]['gap'][sub_key]['inicio']
-                        place['workingH'][key]['gap'][sub_key]['end'] = place['workingH'][key]['gap'][sub_key]['fin']
+                if place['workingH'] == {}:
+                    place['workingH'] = workingH_placeholder
+                    incomplete_fields.append('workingH')
+                else:
+                    for key in place['workingH'].keys():
+                        place['workingH'][key]['start'] = self.add_zero_to_time(
+                            place['workingH'][key]['inicio'])
+                        place['workingH'][key]['end'] = self.add_zero_to_time(
+                            place['workingH'][key]['fin'])
 
-                        del place['workingH'][key]['gap'][sub_key]['inicio']
-                        del place['workingH'][key]['gap'][sub_key]['fin']
+                        if place['workingH'][key]['gap'] != {}:
+                            place['workingH'][key]['gap']['start'] = self.add_zero_to_time(
+                                place['workingH'][key]['gap']['inicio'])
+                            place['workingH'][key]['gap']['end'] = self.add_zero_to_time(
+                                place['workingH'][key]['gap']['fin'])
 
-                    del place['workingH'][key]['inicio']
-                    del place['workingH'][key]['fin']
+                            del place['workingH'][key]['gap']['inicio']
+                            del place['workingH'][key]['gap']['fin']
+
+                        del place['workingH'][key]['inicio']
+                        del place['workingH'][key]['fin']
 
                 place['workingH'] = {
                     '2022-05-05': place['workingH']
                 }
 
-            del place['placeEn']
+            if 'placeEn' in place:
+                del place['placeEn']
+
+            if place['urlImg'] == None:
+                incomplete_fields.append('urlImg')
+
+            if place['title'] == place['name']:
+                incomplete_fields.append('title')
+
+            if place['stars'] == '' or place['stars'] == None:
+                incomplete_fields.append('stars')
+
+            if place['place'] == '' or place['place'] == None:
+                incomplete_fields.append('place')
+
             place['fixed'] = True
+            place['incomplete_fields'] = incomplete_fields
+            place['incomplete'] = len(incomplete_fields) > 0
+            place['urlId'] = self.get_urlId(place)
 
             client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].replace_one(
-                {'_id': place['_id'], 'fixed': False}, place)
+                {**{'_id': place['_id']}, **NOT_FIXED_QUERY}, place)
 
         def scrape(self):
             hosts = [
@@ -120,6 +193,7 @@ def init(idx):
                 'mining.qmm0p.mongodb.net',
                 'mining.lt4yb.mongodb.net',
                 'mining.7ycgq.mongodb.net',
+                'mining.eyrxk.mongodb.net',
                 'mining.jgqac.mongodb.net',
                 'mining.qdxqh.mongodb.net',
                 'mining.fgwlp.mongodb.net',
@@ -150,18 +224,6 @@ def init(idx):
                 except Exception as e:
                     print(e)
                     traceback.print_exc()
-                    if self.driver is not None:
-                        try:
-                            self.driver.close()
-                            self.driver = webdriver.Chrome(
-                                chrome_options=self.options)
-                        except:
-                            print(e)
-            if self.driver is not None:
-                try:
-                    self.driver.close()
-                except:
-                    print(e)
 
     task = FixesThread(idx)
     task.run()

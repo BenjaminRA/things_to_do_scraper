@@ -90,6 +90,11 @@ class MapsScraper():
             if self.verbose:
                 print(f'telf not found')
 
+    def add_zero_to_time(self, time):
+        if len(time) == 4:
+            return '0' + time
+        return time
+
     def get_workingH(self):
         try:
             element = self.driver.find_elements(
@@ -134,11 +139,11 @@ class MapsScraper():
                 def extract_date_range(value):
                     if len(value) > 1:
                         return {
-                            'inicio': value[0].split('–')[0].strip(),
-                            'fin': value[1].split('–')[1].strip(),
+                            'inicio': self.add_zero_to_time(value[0].split('–')[0].strip()),
+                            'fin': self.add_zero_to_time(value[1].split('–')[1].strip()),
                             'gap': {
-                                'inicio': value[0].split('–')[1].strip(),
-                                'fin': value[1].split('–')[0].strip()
+                                'inicio': self.add_zero_to_time(value[0].split('–')[1].strip()),
+                                'fin': self.add_zero_to_time(value[1].split('–')[0].strip())
                             }
                         }
                     else:
@@ -150,8 +155,8 @@ class MapsScraper():
                             }
                         else:
                             return {
-                                'inicio': value[0].split('–')[0].strip(),
-                                'fin': value[0].split('–')[1].strip(),
+                                'inicio': self.add_zero_to_time(value[0].split('–')[0].strip()),
+                                'fin': self.add_zero_to_time(value[0].split('–')[1].strip()),
                                 'gap': {}
                             }
 
