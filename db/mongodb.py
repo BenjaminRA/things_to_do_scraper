@@ -12,3 +12,13 @@ def get_client():
         f"mongodb+srv://<username>:<password>@{os.getenv('MONGODB_HOST')}")
 
     return mongodb['mining']
+
+
+def get_client_by_host(host):
+    mongodb = pymongo.MongoClient(
+        f"mongodb+srv://{os.getenv('MONGODB_USER')}:{os.getenv('MONGODB_PASSWORD')}@{host}")
+
+    print(
+        f"mongodb+srv://<username>:<password>@{os.getenv('MONGODB_HOST')}")
+
+    return mongodb['mining']
