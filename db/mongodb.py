@@ -11,7 +11,7 @@ def get_client():
     print(
         f"mongodb+srv://<username>:<password>@{os.getenv('MONGODB_HOST')}")
 
-    return mongodb['mining']
+    return mongodb['tripendar']
 
 
 def get_client_by_host(host):
@@ -21,4 +21,4 @@ def get_client_by_host(host):
     print(
         f"mongodb+srv://<username>:<password>@{host}")
 
-    return mongodb['mining']
+    return mongodb['tripendar']

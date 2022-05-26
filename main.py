@@ -200,7 +200,7 @@ def init(idx):
             Returns the places to scrape from the mongoDB database,
             given the language and the priority provided by the user in the command line.
             """
-            query = {'scraped': False}
+            query = {'scraped': False, 'numberActivitiesTotal': 0}
 
             if args.country != '':
                 query['country'] = args.country
@@ -212,17 +212,20 @@ def init(idx):
                 query['city'] = args.city
 
             if args.priority != '':
-                query['priority'] = int(args.priority)
+                query['priorityScrape'] = int(args.priority)
 
             if args.priority_lte != '':
-                query['priority'] = {'$lte': int(args.priority_lte)}
+                query['priorityScrape'] = {'$lte': int(args.priority_lte)}
 
             if args.group != '':
                 query['group'] = args.group
 
             ciudades = list(self.client[os.getenv(
-                'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].find(
-                query).sort('priority', 1).limit(args.chunck))
+                'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].aggregate([
+                    {'$match': query},
+                    # {'$sort': {'priorityScrape': 1}},
+                    {'$sample': {'size': args.chunck}},
+                ]))
 
             random.shuffle(ciudades)
 
@@ -249,7 +252,7 @@ def init(idx):
             """
             self.client[os.getenv(
                 'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].update_one({'_id': territory['_id']}, {
-                    '$set': {'scraped': True}})
+                    '$set': {'scraped': True, 'updatedAt': str(datetime.now())}})
 
             print(f"{self.get_territory_name(territory)} scraped")
 
@@ -320,13 +323,13 @@ def init(idx):
                             match = suggestion
                             break
                     else:
-                        if territory['state'] is not None:
-                            if territory['state'].lower().strip() in suggestion.text.lower().strip():
+                        if territory['state' if lang == 'es' else 'stateEn'] is not None:
+                            if territory['state' if lang == 'es' else 'stateEn'].lower().strip() in suggestion.text.lower().strip():
                                 match = suggestion
                                 break
 
-                        if territory['country'] is not None:
-                            if territory['country'].lower().strip() in suggestion.text.lower().strip():
+                        if territory['country' if lang == 'es' else 'countryEn'] is not None:
+                            if territory['country' if lang == 'es' else 'countryEn'].lower().strip() in suggestion.text.lower().strip():
                                 match = suggestion
                                 break
 
@@ -551,7 +554,7 @@ def init(idx):
                             self.client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].delete_one(
                                 {'_id': repeated_attraction['_id']})
 
-        def check_attraction_repeated(self, place, territory, lang):
+        def check_attraction_repeated(self, place, territory, lang, start_time):
             """
             Checks if the attraction has been inserted.
             """
@@ -566,6 +569,8 @@ def init(idx):
                     temp.append(territory['_id'])
 
                 set_query['location'] = temp
+                set_query['updatedAt'] = str(datetime.now())
+                set_query['elapsed_time_checking'] = time.time() - start_time
 
                 print(
                     f"{place['googlePlaceId']} \"{place[f'nombre_place_{lang}']}\" already scraped")
@@ -580,6 +585,21 @@ def init(idx):
                 return True
 
             return False
+
+        def get_urlId(self, place):
+            urlId = []
+            codeId = str(place['_id'])[-5:]
+
+            if 'name' in place and place['name'] is not None:
+                esId = f"{codeId}-{place['name'].replace(' ', '-')}"
+                urlId.append(esId)
+
+            if 'nameEn' in place and place['nameEn'] is not None:
+                enId = f"{codeId}-{place['nameEn'].replace(' ', '-')}"
+                if enId != esId:
+                    urlId.append(enId)
+
+            return urlId
 
         def scrape_territory(self, territory, lang='en'):
             """
@@ -607,7 +627,6 @@ def init(idx):
                 'nombre_place_es': None,
                 'nombre_place_en': None,
                 'place': None,
-                'placeEn': None,
                 'stars': None,
                 'descripcion_ttt_es': None,
                 'descripcion_ttt_en': None,
@@ -675,7 +694,7 @@ def init(idx):
                 if place[f'googlePlaceId'] is None:
                     continue
 
-                if self.check_attraction_repeated(place, territory, lang):
+                if self.check_attraction_repeated(place, territory, lang, start_time):
                     continue
 
                 if place[f'descripcion_ttt_{lang}'] is None:
@@ -706,11 +725,9 @@ def init(idx):
                 final['name'] = place['nombre_place_es']
                 final['nameEn'] = place['nombre_place_en']
                 final['place'] = place['direccion_es']
-                final['placeEn'] = place['direccion_en']
                 final['location'] = [territory['_id']]
                 final['stars'] = '' if place['stars'] is None else place['stars']
                 final['duration'] = 1 if place['duration'] is None else place['duration']
-                final['workingH'] = place['workingH']
                 final['tags'] = self.get_tags(place, territory)
                 final['classes'] = self.get_classes()
                 final['hide'] = False
@@ -761,6 +778,32 @@ def init(idx):
                     final['urlImg'] = place['imagenes'][0]
                     final['urlImages'] = place['imagenes']
 
+                # checking incomplete fields
+                incomplete_fields = []
+
+                if 'null' in place['workingH']:
+                    incomplete_fields.append('workingH')
+                    del place['workingH']['null']
+
+                final['workingH'] = place['workingH']
+
+                if 'urlImg' not in place or final['urlImg'] == None or final['urlImg'] == '':
+                    incomplete_fields.append('urlImg')
+
+                if final['title'] == final['name']:
+                    incomplete_fields.append('title')
+
+                if 'stars' not in final or final['stars'] == '' or final['stars'] == None:
+                    incomplete_fields.append('stars')
+
+                if 'place' not in final or final['place'] == '' or final['place'] == None:
+                    incomplete_fields.append('place')
+
+                place['fixed'] = True
+                place['incomplete_fields'] = incomplete_fields
+                place['incomplete'] = len(incomplete_fields) > 0
+                place['urlId'] = self.get_urlId(place)
+
                 try:
                     self.client[os.getenv(
                         'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].insert_one(final)
@@ -768,7 +811,7 @@ def init(idx):
                     print(e)
                     print(final)
                     time.sleep(2)
-                    if self.check_attraction_repeated(place, territory, lang):
+                    if self.check_attraction_repeated(place, territory, lang, start_time):
                         continue
 
                 print(

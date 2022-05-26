@@ -1,6 +1,8 @@
+import json
 import os
 import argparse
 import random
+import time
 import traceback
 from dotenv import load_dotenv
 from selenium import webdriver
@@ -33,6 +35,19 @@ threads = []
 NOT_FIXED_QUERY = {'$or': [{'fixed': False},
                            {'incomplete': {'$exists': False}}]}
 
+NOT_FIXED_CITIES_QUERY = {'$or': [
+    {'fixed': False},
+    {'numberActivities': {'$exists': False}},
+    {'priority': {'$exists': False}},
+    {'$and': [{'numberActivities': {'$gte': 3}}, {
+        'activitiesImg.2': {'$exists': False}}]},
+    {'lat': {'$exists': True}},
+    {'autoCompleteSelector': {'$exists': False}},
+]}
+
+TO_HIDE = json.load(open('to_hide.json', encoding="utf-8"))
+EMOJI_CITY = json.load(open('emojicities.json', encoding="utf-8"))
+
 
 def init(idx):
     class FixesThread():
@@ -44,38 +59,146 @@ def init(idx):
 
         def get_places(self, client):
             places = list(client[os.getenv(
-                'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].find(NOT_FIXED_QUERY).limit(500))
+                'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
+                    {'$match': NOT_FIXED_QUERY},
+                    {'$sample': {'size': 1000}}
+                ]))
             random.shuffle(places)
 
             return places
 
         def get_cities(self, client):
             places = list(client[os.getenv(
-                'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].find(
-                {'fixed': False}).limit(500))
+                'MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].aggregate([
+                    {'$match': NOT_FIXED_CITIES_QUERY},
+                    {'$sample': {'size': 1000}}
+                ]))
             random.shuffle(places)
 
             return places
 
-        def fix_city(self, city, client):
-            city['radius'] = 8000
-            city['airportCoord'] = {
-                'lat': city['lat'],
-                'lon': city['lon']
-            }
-            fullName = []
-            if 'city' in city and city['city'] is not None:
-                fullName.append(city['city'])
-            if 'state' in city and city['state'] is not None:
-                fullName.append(city['state'])
-            if 'country' in city and city['country'] is not None:
-                fullName.append(city['country'])
+        def get_priority(self, numberActivities):
+            if numberActivities > 50:
+                return 4
 
-            city['fullName'] = ', '.join(fullName)
-            city['fixed'] = True
+            if numberActivities > 20 and numberActivities <= 50:
+                return 3
 
-            client[os.getenv('MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].replace_one(
-                {'_id': city['_id'], 'fixed': False}, city)
+            if numberActivities >= 10 and numberActivities <= 20:
+                return 2
+
+            if numberActivities >= 5 and numberActivities < 10:
+                return 1
+
+            return 0
+
+        def fix_city(self, city, clients):
+            for client in clients:
+                city_temp = client[os.getenv('MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].find_one(
+                    {'_id': city['_id']})
+                if 'activitiesImg' in city_temp and len(city_temp['activitiesImg']) == 3:
+                    return
+
+            start_time = time.time()
+            if 'fixed' not in city or not city['fixed']:
+                city['radius'] = 8000
+                city['airportCoord'] = {
+                    'lat': city['lat'],
+                    'lon': city['lon']
+                }
+                fullName = []
+                if 'city' in city and city['city'] is not None:
+                    fullName.append(city['city'])
+                if 'state' in city and city['state'] is not None:
+                    fullName.append(city['state'])
+                if 'country' in city and city['country'] is not None:
+                    fullName.append(city['country'])
+
+                city['fullName'] = ', '.join(fullName)
+                city['fixed'] = True
+
+            if 'numberActivities' not in city:
+                if city['fullName'].lower() in TO_HIDE:
+                    city['numberActivities'] = 0
+                else:
+
+                    count = 0
+                    for client in clients:
+                        places_count = list(client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
+                            {
+                                '$match': {'location': {'$in': [city['_id']]}, 'incomplete': False, 'hide': False}
+                            }, {
+                                '$count': 'atracciones'
+                            }
+                        ]))
+
+                        count += (0 if len(
+                            places_count) == 0 else places_count[0]['atracciones'])
+
+                    city['numberActivities'] = count
+
+            if f"{city['countryEn'].lower()} flag" in EMOJI_CITY:
+                city['emoji'] = EMOJI_CITY[f"{city['countryEn'].lower()} flag"]
+
+            if 'priority' not in city:
+                count = 0
+                for client in clients:
+                    places_count = list(client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
+                        {
+                            '$match': {'location': {'$in': [city['_id']]}}
+                        }, {
+                            '$count': 'atracciones'
+                        }
+                    ]))
+
+                    count += (0 if len(
+                        places_count) == 0 else places_count[0]['atracciones'])
+
+                city['numberActivitiesTotal'] = count
+                city['priority'] = self.get_priority(count)
+
+            if 'activitiesImg' not in city or len(city['activitiesImg']) < 3:
+                images = []
+                if city['numberActivities'] > 0:
+
+                    places = list(client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
+                        {
+                            '$match': {
+                                'location': {'$in': [city['_id']]},
+                                'incomplete': False,
+                                'urlImg': {'$ne': None}
+                            }
+                        }, {
+                            '$sort': {'stars': -1, '_id': 1}
+                        }, {
+                            '$limit': 3
+                        }
+                    ]))
+
+                    for place in places:
+                        images.append(place['urlImg'])
+
+                city['activitiesImg'] = images
+
+            if 'autoCompleteSelector' not in city:
+                autoCompleteSelectorArray = []
+                if 'city' in city and city['city'] is not None:
+                    autoCompleteSelectorArray.append(city['city'])
+                if 'country' in city and city['country'] is not None:
+                    autoCompleteSelectorArray.append(city['country'])
+                if 'cityEn' in city and city['cityEn'] is not None:
+                    autoCompleteSelectorArray.append(city['cityEn'])
+                if 'countryEn' in city and city['countryEn'] is not None:
+                    autoCompleteSelectorArray.append(city['countryEn'])
+
+                city['autoCompleteSelector'] = " ".join(
+                    autoCompleteSelectorArray).lower()
+
+            for client in clients:
+                client[os.getenv('MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].replace_one(
+                    {**{'_id': city['_id']}, **NOT_FIXED_CITIES_QUERY}, city)
+
+            print(f"{city['fullName']}: {time.time() - start_time} [s]")
 
         def get_urlId(self, place):
             urlId = []
@@ -164,16 +287,16 @@ def init(idx):
             if 'placeEn' in place:
                 del place['placeEn']
 
-            if place['urlImg'] == None:
+            if 'urlImg' not in place or place['urlImg'] == None or place['urlImg'] == '':
                 incomplete_fields.append('urlImg')
 
             if place['title'] == place['name']:
                 incomplete_fields.append('title')
 
-            if place['stars'] == '' or place['stars'] == None:
+            if 'stars' not in place or place['stars'] == '' or place['stars'] == None:
                 incomplete_fields.append('stars')
 
-            if place['place'] == '' or place['place'] == None:
+            if 'place' not in place or place['place'] == '' or place['place'] == None:
                 incomplete_fields.append('place')
 
             place['fixed'] = True
@@ -186,34 +309,50 @@ def init(idx):
 
         def scrape(self):
             hosts = [
-                'mining.wmjx2.mongodb.net',
-                'mining.jnmve.mongodb.net',
-                'mining.9enqq.mongodb.net',
-                'mining.5qsxj.mongodb.net',
-                'mining.qmm0p.mongodb.net',
-                'mining.lt4yb.mongodb.net',
-                'mining.7ycgq.mongodb.net',
-                'mining.eyrxk.mongodb.net',
-                'mining.jgqac.mongodb.net',
-                'mining.qdxqh.mongodb.net',
-                'mining.fgwlp.mongodb.net',
+                ['tripendar.qao9p.mongodb.net']
+                # ['mining.wmjx2.mongodb.net'],
+                # ['mining.jnmve.mongodb.net'],
+                # ['mining.9enqq.mongodb.net', 'mining.5qsxj.mongodb.net'],
+                # ['mining.qmm0p.mongodb.net', 'mining.lt4yb.mongodb.net'],
+                # ['mining.7ycgq.mongodb.net', 'mining.eyrxk.mongodb.net'],
+                # ['mining.jgqac.mongodb.net'],
+                # ['mining.qdxqh.mongodb.net'],
+                # ['mining.fgwlp.mongodb.net'],
             ]
 
+            random.shuffle(hosts)
+
             for host in hosts:
-                client = get_client_by_host(host)
+                clients = []
+
+                # Create a client for each host
+                for url in host:
+                    clients.append(get_client_by_host(url))
 
                 not_done = 1
                 while not_done > 0:
-                    cities = self.get_cities(client)
-                    places = self.get_places(client)
+                    # Get places in different arrays to know what set of places corresponds to what client
+                    places_array = []
+                    for client in clients:
+                        places_array.append([self.get_places(client)])
+                        not_done += len(places_array[-1])
 
+                    # Since the cities are the same in all the hosts of the same group, we fetch from the first one
+                    cities = self.get_cities(clients[0])
+
+                    # For each city, we get the places and we fix them
                     for city in cities:
-                        self.fix_city(city, client)
+                        self.fix_city(city, clients)
 
-                    for place in places:
-                        self.fix_place(place, client)
+                    # For each set of places, we call the fix_place function with the place
+                    # and the corresponding client where the place lives
+                    for places in places_array:
+                        for i in range(len(places)):
+                            for place in places[i]:
+                                pass
+                                # self.fix_place(place, clients[i])
 
-                    not_done = len(cities) + len(places)
+                    not_done = len(cities)
 
             self.done = True
 

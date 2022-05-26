@@ -208,7 +208,16 @@ class MapsScraper():
                     temp[f"{start_range}_{last_day}"] = extract_date_range(
                         value)
 
-                self.data['workingH'] = temp
+                self.data['workingH'] = {
+                    '2022-05-05': {
+                        '1_7': {
+                            'start': '00:00',
+                            'end': '00:00',
+                            'gap': {}
+                        }
+                    },
+                    'null': True
+                } if temp == {} else {'2022-05-05': temp}
 
         except Exception as e:
             if self.verbose:
