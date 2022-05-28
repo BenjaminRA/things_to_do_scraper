@@ -58,6 +58,7 @@ STATE_TERRITORY = 2
 CITY_TERRITORY = 3
 
 load_dotenv()
+TO_HIDE = json.load(open('to_hide.json', encoding="utf-8"))
 
 # calculate elapsed time
 
@@ -93,7 +94,7 @@ def init(idx):
             """
             Initializes the chrome driver.
             """
-            print('Scraper Version: 1.7.5')
+            print('Scraper Version: 1.7.7')
             if self.driver is not None:
                 try:
                     self.driver.close()
@@ -819,6 +820,80 @@ def init(idx):
 
             return True
 
+        def get_priority(self, numberActivities):
+            if numberActivities > 50:
+                return 4
+
+            if numberActivities > 20 and numberActivities <= 50:
+                return 3
+
+            if numberActivities >= 10 and numberActivities <= 20:
+                return 2
+
+            if numberActivities >= 5 and numberActivities < 10:
+                return 1
+
+            return 0
+
+        def update_territory(self, city):
+            if city['fullName'].lower() in TO_HIDE:
+                city['numberActivities'] = 0
+            else:
+                count = 0
+                places_count = list(self.client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
+                    {
+                        '$match': {'location': {'$in': [city['_id']]}, 'incomplete': False, 'hide': False}
+                    }, {
+                        '$count': 'atracciones'
+                    }
+                ]))
+
+                count += (0 if len(
+                    places_count) == 0 else places_count[0]['atracciones'])
+
+                city['numberActivities'] = count
+
+            count = 0
+            places_count = list(self.client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
+                {
+                    '$match': {'location': {'$in': [city['_id']]}}
+                }, {
+                    '$count': 'atracciones'
+                }
+            ]))
+
+            count += (0 if len(
+                places_count) == 0 else places_count[0]['atracciones'])
+
+            city['numberActivitiesTotal'] = count
+            city['priority'] = self.get_priority(count)
+
+            if 'activitiesImg' not in city or len(city['activitiesImg']) < 3:
+                images = []
+                if city['numberActivities'] > 0:
+
+                    places = list(self.client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
+                        {
+                            '$match': {
+                                'location': {'$in': [city['_id']]},
+                                'incomplete': False,
+                                'urlImg': {'$ne': None}
+                            }
+                        }, {
+                            '$sort': {'stars': -1, '_id': 1}
+                        }, {
+                            '$limit': 3
+                        }
+                    ]))
+
+                    for place in places:
+                        images.append(place['urlImg'])
+
+                city['activitiesImg'] = images
+
+            self.client[os.getenv('MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].replace_one(
+                {'_id': city['_id']}, city)
+
         def scrape(self):
             self.territories = self.get_places_to_scrape()
             self.done = len(self.territories) == 0
@@ -826,6 +901,7 @@ def init(idx):
             for territory in self.territories:
                 self.init_driver()
                 if self.scrape_territory(territory):
+                    self.update_territory(territory)
                     self.set_scraped(territory)
 
                 try:
