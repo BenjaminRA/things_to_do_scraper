@@ -1,0 +1,1050 @@
+{
+    "chequered flag": {
+        "emoji": "🏁",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f3c1.png"
+    },
+    "ascension island flag": {
+        "emoji": "🇦🇨",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1e8.png"
+    },
+    "andorra flag": {
+        "emoji": "🇦🇩",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1e9.png"
+    },
+    "united arab emirates flag": {
+        "emoji": "🇦🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1ea.png"
+    },
+    "afghanistan flag": {
+        "emoji": "🇦🇫",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1eb.png"
+    },
+    "antigua and barbuda flag": {
+        "emoji": "🇦🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1ec.png"
+    },
+    "anguilla flag": {
+        "emoji": "🇦🇮",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1ee.png"
+    },
+    "albania flag": {
+        "emoji": "🇦🇱",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1f1.png"
+    },
+    "armenia flag": {
+        "emoji": "🇦🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1f2.png"
+    },
+    "aruba flag": {
+        "emoji": "🇦🇼",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1fc.png"
+    },
+    "australia flag": {
+        "emoji": "🇦🇺",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1fa.png"
+    },
+    "austria flag": {
+        "emoji": "🇦🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1f9.png"
+    },
+    "american samoa flag": {
+        "emoji": "🇦🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1f8.png"
+    },
+    "argentina flag": {
+        "emoji": "🇦🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1f7.png"
+    },
+    "antarctica flag": {
+        "emoji": "🇦🇶",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1f6.png"
+    },
+    "angola flag": {
+        "emoji": "🇦🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1f4.png"
+    },
+    "aland islands flag": {
+        "emoji": "🇦🇽",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1fd.png"
+    },
+    "azerbaijan flag": {
+        "emoji": "🇦🇿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e6-1f1ff.png"
+    },
+    "bosnia and herzegovina flag": {
+        "emoji": "🇧🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1e6.png"
+    },
+    "barbados flag": {
+        "emoji": "🇧🇧",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1e7.png"
+    },
+    "bangladesh flag": {
+        "emoji": "🇧🇩",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1e9.png"
+    },
+    "belgium flag": {
+        "emoji": "🇧🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1ea.png"
+    },
+    "burkina faso flag": {
+        "emoji": "🇧🇫",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1eb.png"
+    },
+    "brunei flag": {
+        "emoji": "🇧🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1f3.png"
+    },
+    "bermuda flag": {
+        "emoji": "🇧🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1f2.png"
+    },
+    "saint-barthelemy flag": {
+        "emoji": "🇧🇱",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1f1.png"
+    },
+    "benin flag": {
+        "emoji": "🇧🇯",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1ef.png"
+    },
+    "burundi flag": {
+        "emoji": "🇧🇮",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1ee.png"
+    },
+    "bahrain flag": {
+        "emoji": "🇧🇭",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1ed.png"
+    },
+    "bulgaria flag": {
+        "emoji": "🇧🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1ec.png"
+    },
+    "bolivia flag": {
+        "emoji": "🇧🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1f4.png"
+    },
+    "caribbean netherlands flag": {
+        "emoji": "🇧🇶",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1f6.png"
+    },
+    "brazil flag": {
+        "emoji": "🇧🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1f7.png"
+    },
+    "bahamas flag": {
+        "emoji": "🇧🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1f8.png"
+    },
+    "bhutan flag": {
+        "emoji": "🇧🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1f9.png"
+    },
+    "bouvet island flag": {
+        "emoji": "🇧🇻",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1fb.png"
+    },
+    "botswana flag": {
+        "emoji": "🇧🇼",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1fc.png"
+    },
+    "belarus flag": {
+        "emoji": "🇧🇾",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1fe.png"
+    },
+    "belize flag": {
+        "emoji": "🇧🇿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e7-1f1ff.png"
+    },
+    "canada flag": {
+        "emoji": "🇨🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1e6.png"
+    },
+    "cocos (keeling) islands flag": {
+        "emoji": "🇨🇨",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1e8.png"
+    },
+    "democratic republic of the congo flag": {
+        "emoji": "🇨🇩",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1e9.png"
+    },
+    "central african republic flag": {
+        "emoji": "🇨🇫",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1eb.png"
+    },
+    "congo flag": {
+        "emoji": "🇨🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1ec.png"
+    },
+    "switzerland flag": {
+        "emoji": "🇨🇭",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1ed.png"
+    },
+    "ivory coast flag": {
+        "emoji": "🇨🇮",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1ee.png"
+    },
+    "cook islands flag": {
+        "emoji": "🇨🇰",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1f0.png"
+    },
+    "chile flag": {
+        "emoji": "🇨🇱",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1f1.png"
+    },
+    "cameroon flag": {
+        "emoji": "🇨🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1f2.png"
+    },
+    "china flag": {
+        "emoji": "🇨🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1f3.png"
+    },
+    "colombia flag": {
+        "emoji": "🇨🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1f4.png"
+    },
+    "clipperton island flag": {
+        "emoji": "🇨🇵",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1f5.png"
+    },
+    "costa rica flag": {
+        "emoji": "🇨🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1f7.png"
+    },
+    "cuba flag": {
+        "emoji": "🇨🇺",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1fa.png"
+    },
+    "cape verde flag": {
+        "emoji": "🇨🇻",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1fb.png"
+    },
+    "curaçao flag": {
+        "emoji": "🇨🇼",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1fc.png"
+    },
+    "christmas island flag": {
+        "emoji": "🇨🇽",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1fd.png"
+    },
+    "cyprus flag": {
+        "emoji": "🇨🇾",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1fe.png"
+    },
+    "czechia flag": {
+        "emoji": "🇨🇿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e8-1f1ff.png"
+    },
+    "germany flag": {
+        "emoji": "🇩🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e9-1f1ea.png"
+    },
+    "diego garcia flag": {
+        "emoji": "🇩🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e9-1f1ec.png"
+    },
+    "djibouti flag": {
+        "emoji": "🇩🇯",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e9-1f1ef.png"
+    },
+    "denmark flag": {
+        "emoji": "🇩🇰",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e9-1f1f0.png"
+    },
+    "dominica flag": {
+        "emoji": "🇩🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e9-1f1f2.png"
+    },
+    "dominican republic flag": {
+        "emoji": "🇩🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e9-1f1f4.png"
+    },
+    "algeria flag": {
+        "emoji": "🇩🇿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1e9-1f1ff.png"
+    },
+    "ceuta and melilla flag": {
+        "emoji": "🇪🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ea-1f1e6.png"
+    },
+    "ecuador flag": {
+        "emoji": "🇪🇨",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ea-1f1e8.png"
+    },
+    "estonia flag": {
+        "emoji": "🇪🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ea-1f1ea.png"
+    },
+    "egypt flag": {
+        "emoji": "🇪🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ea-1f1ec.png"
+    },
+    "western sahara flag": {
+        "emoji": "🇪🇭",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ea-1f1ed.png"
+    },
+    "eritrea flag": {
+        "emoji": "🇪🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ea-1f1f7.png"
+    },
+    "spain flag": {
+        "emoji": "🇪🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ea-1f1f8.png"
+    },
+    "ethiopia flag": {
+        "emoji": "🇪🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ea-1f1f9.png"
+    },
+    "european union flag": {
+        "emoji": "🇪🇺",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ea-1f1fa.png"
+    },
+    "finland flag": {
+        "emoji": "🇫🇮",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1eb-1f1ee.png"
+    },
+    "fiji flag": {
+        "emoji": "🇫🇯",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1eb-1f1ef.png"
+    },
+    "falkland islands flag": {
+        "emoji": "🇫🇰",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1eb-1f1f0.png"
+    },
+    "micronesia flag": {
+        "emoji": "🇫🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1eb-1f1f2.png"
+    },
+    "faroe islands flag": {
+        "emoji": "🇫🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1eb-1f1f4.png"
+    },
+    "france flag": {
+        "emoji": "🇫🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1eb-1f1f7.png"
+    },
+    "gabon flag": {
+        "emoji": "🇬🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1e6.png"
+    },
+    "united kingdom flag": {
+        "emoji": "🇬🇧",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1e7.png"
+    },
+    "grenada flag": {
+        "emoji": "🇬🇩",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1e9.png"
+    },
+    "georgia flag": {
+        "emoji": "🇬🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1ea.png"
+    },
+    "french guiana flag": {
+        "emoji": "🇬🇫",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1eb.png"
+    },
+    "guadeloupe flag": {
+        "emoji": "🇬🇵",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1f5.png"
+    },
+    "guinea flag": {
+        "emoji": "🇬🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1f3.png"
+    },
+    "gambia flag": {
+        "emoji": "🇬🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1f2.png"
+    },
+    "greenland flag": {
+        "emoji": "🇬🇱",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1f1.png"
+    },
+    "gibraltar flag": {
+        "emoji": "🇬🇮",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1ee.png"
+    },
+    "ghana flag": {
+        "emoji": "🇬🇭",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1ed.png"
+    },
+    "guernsey flag": {
+        "emoji": "🇬🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1ec.png"
+    },
+    "equatorial guinea flag": {
+        "emoji": "🇬🇶",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1f6.png"
+    },
+    "greece flag": {
+        "emoji": "🇬🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1f7.png"
+    },
+    "south georgia flag": {
+        "emoji": "🇬🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1f8.png"
+    },
+    "guatemala flag": {
+        "emoji": "🇬🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1f9.png"
+    },
+    "guam flag": {
+        "emoji": "🇬🇺",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1fa.png"
+    },
+    "guinea-bissau flag": {
+        "emoji": "🇬🇼",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1fc.png"
+    },
+    "guyana flag": {
+        "emoji": "🇬🇾",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ec-1f1fe.png"
+    },
+    "hong kong s.a.r. flag": {
+        "emoji": "🇭🇰",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ed-1f1f0.png"
+    },
+    "heard island and mcdonald islands flag": {
+        "emoji": "🇭🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ed-1f1f2.png"
+    },
+    "honduras flag": {
+        "emoji": "🇭🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ed-1f1f3.png"
+    },
+    "croatia flag": {
+        "emoji": "🇭🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ed-1f1f7.png"
+    },
+    "haiti flag": {
+        "emoji": "🇭🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ed-1f1f9.png"
+    },
+    "hungary flag": {
+        "emoji": "🇭🇺",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ed-1f1fa.png"
+    },
+    "canary islands flag": {
+        "emoji": "🇮🇨",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ee-1f1e8.png"
+    },
+    "indonesia flag": {
+        "emoji": "🇮🇩",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ee-1f1e9.png"
+    },
+    "ireland flag": {
+        "emoji": "🇮🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ee-1f1ea.png"
+    },
+    "israel flag": {
+        "emoji": "🇮🇱",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ee-1f1f1.png"
+    },
+    "man (isle of) flag": {
+        "emoji": "🇮🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ee-1f1f2.png"
+    },
+    "india flag": {
+        "emoji": "🇮🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ee-1f1f3.png"
+    },
+    "british indian ocean territory flag": {
+        "emoji": "🇮🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ee-1f1f4.png"
+    },
+    "iraq flag": {
+        "emoji": "🇮🇶",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ee-1f1f6.png"
+    },
+    "iran flag": {
+        "emoji": "🇮🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ee-1f1f7.png"
+    },
+    "iceland flag": {
+        "emoji": "🇮🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ee-1f1f8.png"
+    },
+    "italy flag": {
+        "emoji": "🇮🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ee-1f1f9.png"
+    },
+    "jersey flag": {
+        "emoji": "🇯🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ef-1f1ea.png"
+    },
+    "jamaica flag": {
+        "emoji": "🇯🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ef-1f1f2.png"
+    },
+    "jordan flag": {
+        "emoji": "🇯🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ef-1f1f4.png"
+    },
+    "japan flag": {
+        "emoji": "🇯🇵",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ef-1f1f5.png"
+    },
+    "kenya flag": {
+        "emoji": "🇰🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f0-1f1ea.png"
+    },
+    "kyrgyzstan flag": {
+        "emoji": "🇰🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f0-1f1ec.png"
+    },
+    "cambodia flag": {
+        "emoji": "🇰🇭",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f0-1f1ed.png"
+    },
+    "kiribati flag": {
+        "emoji": "🇰🇮",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f0-1f1ee.png"
+    },
+    "comoros flag": {
+        "emoji": "🇰🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f0-1f1f2.png"
+    },
+    "saint kitts and nevis flag": {
+        "emoji": "🇰🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f0-1f1f3.png"
+    },
+    "north korea flag": {
+        "emoji": "🇰🇵",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f0-1f1f5.png"
+    },
+    "south korea flag": {
+        "emoji": "🇰🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f0-1f1f7.png"
+    },
+    "kuwait flag": {
+        "emoji": "🇰🇼",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f0-1f1fc.png"
+    },
+    "cayman islands flag": {
+        "emoji": "🇰🇾",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f0-1f1fe.png"
+    },
+    "kazakhstan flag": {
+        "emoji": "🇰🇿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f0-1f1ff.png"
+    },
+    "laos flag": {
+        "emoji": "🇱🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f1-1f1e6.png"
+    },
+    "lebanon flag": {
+        "emoji": "🇱🇧",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f1-1f1e7.png"
+    },
+    "saint lucia flag": {
+        "emoji": "🇱🇨",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f1-1f1e8.png"
+    },
+    "liechtenstein flag": {
+        "emoji": "🇱🇮",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f1-1f1ee.png"
+    },
+    "sri lanka flag": {
+        "emoji": "🇱🇰",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f1-1f1f0.png"
+    },
+    "liberia flag": {
+        "emoji": "🇱🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f1-1f1f7.png"
+    },
+    "lesotho flag": {
+        "emoji": "🇱🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f1-1f1f8.png"
+    },
+    "lithuania flag": {
+        "emoji": "🇱🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f1-1f1f9.png"
+    },
+    "luxembourg flag": {
+        "emoji": "🇱🇺",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f1-1f1fa.png"
+    },
+    "latvia flag": {
+        "emoji": "🇱🇻",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f1-1f1fb.png"
+    },
+    "libya flag": {
+        "emoji": "🇱🇾",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f1-1f1fe.png"
+    },
+    "morocco flag": {
+        "emoji": "🇲🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1e6.png"
+    },
+    "monaco flag": {
+        "emoji": "🇲🇨",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1e8.png"
+    },
+    "moldova flag": {
+        "emoji": "🇲🇩",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1e9.png"
+    },
+    "montenegro flag": {
+        "emoji": "🇲🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1ea.png"
+    },
+    "saint-martin (french part) flag": {
+        "emoji": "🇲🇫",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1eb.png"
+    },
+    "madagascar flag": {
+        "emoji": "🇲🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1ec.png"
+    },
+    "marshall islands flag": {
+        "emoji": "🇲🇭",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1ed.png"
+    },
+    "macedonia flag": {
+        "emoji": "🇲🇰",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1f0.png"
+    },
+    "mali flag": {
+        "emoji": "🇲🇱",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1f1.png"
+    },
+    "myanmar flag": {
+        "emoji": "🇲🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1f2.png"
+    },
+    "mongolia flag": {
+        "emoji": "🇲🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1f3.png"
+    },
+    "macau s.a.r. flag": {
+        "emoji": "🇲🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1f4.png"
+    },
+    "northern mariana islands flag": {
+        "emoji": "🇲🇵",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1f5.png"
+    },
+    "martinique flag": {
+        "emoji": "🇲🇶",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1f6.png"
+    },
+    "mauritania flag": {
+        "emoji": "🇲🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1f7.png"
+    },
+    "montserrat flag": {
+        "emoji": "🇲🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1f8.png"
+    },
+    "malta flag": {
+        "emoji": "🇲🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1f9.png"
+    },
+    "mauritius flag": {
+        "emoji": "🇲🇺",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1fa.png"
+    },
+    "maldives flag": {
+        "emoji": "🇲🇻",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1fb.png"
+    },
+    "malawi flag": {
+        "emoji": "🇲🇼",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1fc.png"
+    },
+    "mexico flag": {
+        "emoji": "🇲🇽",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1fd.png"
+    },
+    "malaysia flag": {
+        "emoji": "🇲🇾",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1fe.png"
+    },
+    "mozambique flag": {
+        "emoji": "🇲🇿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f2-1f1ff.png"
+    },
+    "namibia flag": {
+        "emoji": "🇳🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1e6.png"
+    },
+    "new caledonia flag": {
+        "emoji": "🇳🇨",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1e8.png"
+    },
+    "niger flag": {
+        "emoji": "🇳🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1ea.png"
+    },
+    "norfolk island flag": {
+        "emoji": "🇳🇫",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1eb.png"
+    },
+    "nigeria flag": {
+        "emoji": "🇳🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1ec.png"
+    },
+    "nicaragua flag": {
+        "emoji": "🇳🇮",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1ee.png"
+    },
+    "netherlands flag": {
+        "emoji": "🇳🇱",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1f1.png"
+    },
+    "norway flag": {
+        "emoji": "🇳🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1f4.png"
+    },
+    "nepal flag": {
+        "emoji": "🇳🇵",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1f5.png"
+    },
+    "nauru flag": {
+        "emoji": "🇳🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1f7.png"
+    },
+    "niue flag": {
+        "emoji": "🇳🇺",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1fa.png"
+    },
+    "new zealand flag": {
+        "emoji": "🇳🇿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f3-1f1ff.png"
+    },
+    "oman flag": {
+        "emoji": "🇴🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f4-1f1f2.png"
+    },
+    "panama flag": {
+        "emoji": "🇵🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1e6.png"
+    },
+    "peru flag": {
+        "emoji": "🇵🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1ea.png"
+    },
+    "papua new guinea flag": {
+        "emoji": "🇵🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1ec.png"
+    },
+    "french polynesia flag": {
+        "emoji": "🇵🇫",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1eb.png"
+    },
+    "philippines flag": {
+        "emoji": "🇵🇭",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1ed.png"
+    },
+    "pakistan flag": {
+        "emoji": "🇵🇰",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1f0.png"
+    },
+    "poland flag": {
+        "emoji": "🇵🇱",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1f1.png"
+    },
+    "saint pierre and miquelon flag": {
+        "emoji": "🇵🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1f2.png"
+    },
+    "pitcairn island flag": {
+        "emoji": "🇵🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1f3.png"
+    },
+    "puerto rico flag": {
+        "emoji": "🇵🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1f7.png"
+    },
+    "palestinian territory occupied flag": {
+        "emoji": "🇵🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1f8.png"
+    },
+    "portugal flag": {
+        "emoji": "🇵🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1f9.png"
+    },
+    "palau flag": {
+        "emoji": "🇵🇼",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1fc.png"
+    },
+    "paraguay flag": {
+        "emoji": "🇵🇾",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f5-1f1fe.png"
+    },
+    "qatar flag": {
+        "emoji": "🇶🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f6-1f1e6.png"
+    },
+    "reunion flag": {
+        "emoji": "🇷🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f7-1f1ea.png"
+    },
+    "romania flag": {
+        "emoji": "🇷🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f7-1f1f4.png"
+    },
+    "serbia flag": {
+        "emoji": "🇷🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f7-1f1f8.png"
+    },
+    "russia flag": {
+        "emoji": "🇷🇺",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f7-1f1fa.png"
+    },
+    "rwanda flag": {
+        "emoji": "🇷🇼",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f7-1f1fc.png"
+    },
+    "saudi arabia flag": {
+        "emoji": "🇸🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1e6.png"
+    },
+    "solomon islands flag": {
+        "emoji": "🇸🇧",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1e7.png"
+    },
+    "seychelles flag": {
+        "emoji": "🇸🇨",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1e8.png"
+    },
+    "sudan flag": {
+        "emoji": "🇸🇩",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1e9.png"
+    },
+    "sweden flag": {
+        "emoji": "🇸🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1ea.png"
+    },
+    "singapore flag": {
+        "emoji": "🇸🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1ec.png"
+    },
+    "saint helena flag": {
+        "emoji": "🇸🇭",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1ed.png"
+    },
+    "slovenia flag": {
+        "emoji": "🇸🇮",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1ee.png"
+    },
+    "svalbard and jan mayen islands flag": {
+        "emoji": "🇸🇯",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1ef.png"
+    },
+    "slovakia flag": {
+        "emoji": "🇸🇰",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1f0.png"
+    },
+    "sierra leone flag": {
+        "emoji": "🇸🇱",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1f1.png"
+    },
+    "san marino flag": {
+        "emoji": "🇸🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1f2.png"
+    },
+    "senegal flag": {
+        "emoji": "🇸🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1f3.png"
+    },
+    "somalia flag": {
+        "emoji": "🇸🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1f4.png"
+    },
+    "suriname flag": {
+        "emoji": "🇸🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1f7.png"
+    },
+    "south sudan flag": {
+        "emoji": "🇸🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1f8.png"
+    },
+    "sao tome and principe flag": {
+        "emoji": "🇸🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1f9.png"
+    },
+    "el salvador flag": {
+        "emoji": "🇸🇻",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1fb.png"
+    },
+    "sint maarten (dutch part) flag": {
+        "emoji": "🇸🇽",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1fd.png"
+    },
+    "syria flag": {
+        "emoji": "🇸🇾",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1fe.png"
+    },
+    "swaziland flag": {
+        "emoji": "🇸🇿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f8-1f1ff.png"
+    },
+    "tristan da cunha flag": {
+        "emoji": "🇹🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1e6.png"
+    },
+    "turks and caicos islands flag": {
+        "emoji": "🇹🇨",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1e8.png"
+    },
+    "chad flag": {
+        "emoji": "🇹🇩",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1e9.png"
+    },
+    "french southern territories flag": {
+        "emoji": "🇹🇫",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1eb.png"
+    },
+    "togo flag": {
+        "emoji": "🇹🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1ec.png"
+    },
+    "thailand flag": {
+        "emoji": "🇹🇭",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1ed.png"
+    },
+    "tajikistan flag": {
+        "emoji": "🇹🇯",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1ef.png"
+    },
+    "tokelau flag": {
+        "emoji": "🇹🇰",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1f0.png"
+    },
+    "east timor flag": {
+        "emoji": "🇹🇱",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1f1.png"
+    },
+    "turkmenistan flag": {
+        "emoji": "🇹🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1f2.png"
+    },
+    "tunisia flag": {
+        "emoji": "🇹🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1f3.png"
+    },
+    "tonga flag": {
+        "emoji": "🇹🇴",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1f4.png"
+    },
+    "turkey flag": {
+        "emoji": "🇹🇷",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1f7.png"
+    },
+    "trinidad and tobago flag": {
+        "emoji": "🇹🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1f9.png"
+    },
+    "tuvalu flag": {
+        "emoji": "🇹🇻",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1fb.png"
+    },
+    "taiwan flag": {
+        "emoji": "🇹🇼",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1fc.png"
+    },
+    "tanzania flag": {
+        "emoji": "🇹🇿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1f9-1f1ff.png"
+    },
+    "ukraine flag": {
+        "emoji": "🇺🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fa-1f1e6.png"
+    },
+    "uganda flag": {
+        "emoji": "🇺🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fa-1f1ec.png"
+    },
+    "united states minor outlying islands flag": {
+        "emoji": "🇺🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fa-1f1f2.png"
+    },
+    "united nations flag": {
+        "emoji": "🇺🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fa-1f1f3.png"
+    },
+    "united states flag": {
+        "emoji": "🇺🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fa-1f1f8.png"
+    },
+    "uruguay flag": {
+        "emoji": "🇺🇾",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fa-1f1fe.png"
+    },
+    "uzbekistan flag": {
+        "emoji": "🇺🇿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fa-1f1ff.png"
+    },
+    "vatican city flag": {
+        "emoji": "🇻🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fb-1f1e6.png"
+    },
+    "saint vincent and the grenadines flag": {
+        "emoji": "🇻🇨",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fb-1f1e8.png"
+    },
+    "venezuela flag": {
+        "emoji": "🇻🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fb-1f1ea.png"
+    },
+    "virgin islands (british) flag": {
+        "emoji": "🇻🇬",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fb-1f1ec.png"
+    },
+    "virgin uslands (us) flag": {
+        "emoji": "🇻🇮",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fb-1f1ee.png"
+    },
+    "vietnam flag": {
+        "emoji": "🇻🇳",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fb-1f1f3.png"
+    },
+    "vanuatu flag": {
+        "emoji": "🇻🇺",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fb-1f1fa.png"
+    },
+    "wallis and futuna islands flag": {
+        "emoji": "🇼🇫",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fc-1f1eb.png"
+    },
+    "samoa flag": {
+        "emoji": "🇼🇸",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fc-1f1f8.png"
+    },
+    "kosovo flag": {
+        "emoji": "🇽🇰",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fd-1f1f0.png"
+    },
+    "yemen flag": {
+        "emoji": "🇾🇪",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fe-1f1ea.png"
+    },
+    "mayotte flag": {
+        "emoji": "🇾🇹",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1fe-1f1f9.png"
+    },
+    "south africa flag": {
+        "emoji": "🇿🇦",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ff-1f1e6.png"
+    },
+    "zambia flag": {
+        "emoji": "🇿🇲",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ff-1f1f2.png"
+    },
+    "zimbabwe flag": {
+        "emoji": "🇿🇼",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f1ff-1f1fc.png"
+    },
+    "england flag": {
+        "emoji": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f3f4-e0067-e0062-e0065-e006e-e0067-e007f.png"
+    },
+    "scotland flag": {
+        "emoji": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f3f4-e0067-e0062-e0073-e0063-e0074-e007f.png"
+    },
+    "wales flag": {
+        "emoji": "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
+        "url": "https://cdn.jsdelivr.net/npm/emoji-datasource-apple@6.0.1/img/apple/64/1f3f4-e0067-e0062-e0077-e006c-e0073-e007f.png"
+    }
+}
