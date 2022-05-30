@@ -405,10 +405,10 @@ class MapsScraper():
                 reviews = []
 
                 WebDriverWait(self.driver, 30).until(EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, 'div[class="m6QErb"][jsan="t-dgE5uNmzjiE,7.m6QErb"] .jftiEf.L6Bbsd')))
+                    (By.CSS_SELECTOR, 'div[class="m6QErb"][jsan="t-dgE5uNmzjiE,7.m6QErb"] .jftiEf')))
 
                 review_elements = self.driver.find_elements(
-                    By.CSS_SELECTOR, 'div[class="m6QErb"][jsan="t-dgE5uNmzjiE,7.m6QErb"] .jftiEf.L6Bbsd')
+                    By.CSS_SELECTOR, 'div[class="m6QErb"][jsan="t-dgE5uNmzjiE,7.m6QErb"] .jftiEf')
 
                 for review in review_elements:
                     ActionChains(self.driver).move_to_element(

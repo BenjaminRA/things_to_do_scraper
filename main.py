@@ -94,7 +94,7 @@ def init(idx):
             """
             Initializes the chrome driver.
             """
-            print('Scraper Version: 1.7.7')
+            print('Scraper Version: 1.7.8')
             if self.driver is not None:
                 try:
                     self.driver.close()
