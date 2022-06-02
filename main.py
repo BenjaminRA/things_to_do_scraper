@@ -788,7 +788,7 @@ def init(idx):
 
                 final['workingH'] = place['workingH']
 
-                if 'urlImg' not in place or final['urlImg'] == None or final['urlImg'] == '':
+                if 'urlImg' not in final or final['urlImg'] == None or final['urlImg'] == '':
                     incomplete_fields.append('urlImg')
 
                 if final['title'] == final['name']:
@@ -800,14 +800,19 @@ def init(idx):
                 if 'place' not in final or final['place'] == '' or final['place'] == None:
                     incomplete_fields.append('place')
 
-                place['fixed'] = True
-                place['incomplete_fields'] = incomplete_fields
-                place['incomplete'] = len(incomplete_fields) > 0
-                place['urlId'] = self.get_urlId(place)
+                final['fixed'] = True
+                final['incomplete_fields'] = incomplete_fields
+                final['incomplete'] = len(incomplete_fields) > 0
 
                 try:
-                    self.client[os.getenv(
+                    result = self.client[os.getenv(
                         'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].insert_one(final)
+
+                    final['_id'] = result.inserted_id
+                    final['urlId'] = self.get_urlId(final)
+
+                    self.client[os.getenv(
+                        'MONGODB_DBNAME_PLACES_COLLECTION_NAME')].replace_one({'_id': final['_id']}, final)
                 except Exception as e:
                     print(e)
                     print(final)
@@ -900,7 +905,8 @@ def init(idx):
 
             for territory in self.territories:
                 self.init_driver()
-                if self.scrape_territory(territory):
+                success_scrape = self.scrape_territory(territory)
+                if success_scrape:
                     self.update_territory(territory)
                     self.set_scraped(territory)
 
