@@ -337,9 +337,9 @@ def init(idx):
                 while not_done > 0:
                     # Get places in different arrays to know what set of places corresponds to what client
                     places_array = []
-                    for client in clients:
-                        places_array.append([self.get_places(client)])
-                        not_done += len(places_array[-1])
+                    # for client in clients:
+                    #     places_array.append([self.get_places(client)])
+                    #     not_done += len(places_array[-1])
 
                     # Since the cities are the same in all the hosts of the same group, we fetch from the first one
                     cities = self.get_cities(clients[0])
