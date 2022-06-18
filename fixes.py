@@ -4,6 +4,8 @@ import argparse
 import random
 import time
 import traceback
+import unicodedata
+import re
 from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -20,6 +22,12 @@ from db.mongodb import get_client_by_host
 from multiprocessing import Process
 load_dotenv()
 
+
+def strip_accents(s):
+    return ''.join(c for c in unicodedata.normalize('NFD', s)
+                   if unicodedata.category(c) != 'Mn')
+
+
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--threads', type=int, default=1,
@@ -35,15 +43,7 @@ threads = []
 NOT_FIXED_QUERY = {'$or': [{'fixed': False},
                            {'incomplete': {'$exists': False}}]}
 
-NOT_FIXED_CITIES_QUERY = {'$or': [
-    {'fixed': False},
-    {'numberActivities': {'$exists': False}},
-    {'priority': {'$exists': False}},
-    {'$and': [{'numberActivities': {'$gte': 3}}, {
-        'activitiesImg.2': {'$exists': False}}]},
-    {'lat': {'$exists': True}},
-    {'autoCompleteSelector': {'$exists': False}},
-]}
+NOT_FIXED_CITIES_QUERY = {'fixed': False}
 
 TO_HIDE = json.load(open('to_hide.json', encoding="utf-8"))
 EMOJI_CITY = json.load(open('emojicities.json', encoding="utf-8"))
@@ -96,7 +96,7 @@ def init(idx):
             for client in clients:
                 city_temp = client[os.getenv('MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].find_one(
                     {'_id': city['_id']})
-                if 'activitiesImg' in city_temp and len(city_temp['activitiesImg']) == 3:
+                if 'fixed' in city_temp and city_temp['fixed'] is True:
                     return
 
             start_time = time.time()
@@ -114,85 +114,105 @@ def init(idx):
                 if 'country' in city and city['country'] is not None:
                     fullName.append(city['country'])
 
+                fullNameEn = []
+                if 'cityEn' in city and city['cityEn'] is not None:
+                    fullNameEn.append(city['cityEn'])
+                if 'stateEn' in city and city['stateEn'] is not None:
+                    fullNameEn.append(city['stateEn'])
+                if 'countryEn' in city and city['countryEn'] is not None:
+                    fullNameEn.append(city['countryEn'])
+
+                def aux_assignment(key1='', key2=''):
+                    if key1 in city and city[key1] is not None:
+                        return city[key1]
+                    if key2 in city and city[key2] is not None:
+                        return city[key2]
+
+                    return ''
+
                 city['fullName'] = ', '.join(fullName)
+                city['fullNameEn'] = ', '.join(fullNameEn)
+                city['autoCompleteSelector'] = re.sub(r"/[\u0300 -\u036f]/g", "", strip_accents(
+                    f"{aux_assignment('city', 'state')} {aux_assignment('state')} {aux_assignment('country')}, {aux_assignment('cityEn', 'stateEn')} {aux_assignment('stateEn')} {aux_assignment('countryEn')}, {aux_assignment('city', 'state')} {aux_assignment('country')}, {aux_assignment('cityEn', 'stateEn')} {aux_assignment('countryEn')}"))
+
                 city['fixed'] = True
 
-            if 'numberActivities' not in city:
-                if city['fullName'].lower() in TO_HIDE:
-                    city['numberActivities'] = 0
-                else:
+            # if 'numberActivities' not in city:
+            #     if city['fullName'].lower() in TO_HIDE:
+            #         city['numberActivities'] = 0
+            #     else:
 
-                    count = 0
-                    for client in clients:
-                        places_count = list(client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
-                            {
-                                '$match': {'location': {'$in': [city['_id']]}, 'incomplete': False, 'hide': False}
-                            }, {
-                                '$count': 'atracciones'
-                            }
-                        ]))
+            #         count = 0
+            #         for client in clients:
+            #             places_count = list(client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
+            #                 {
+            #                     '$match': {'location': {'$in': [city['_id']]}, 'incomplete': False, 'hide': False}
+            #                 }, {
+            #                     '$count': 'atracciones'
+            #                 }
+            #             ]))
 
-                        count += (0 if len(
-                            places_count) == 0 else places_count[0]['atracciones'])
+            #             count += (0 if len(
+            #                 places_count) == 0 else places_count[0]['atracciones'])
 
-                    city['numberActivities'] = count
+            #         city['numberActivities'] = count
 
-            if f"{city['countryEn'].lower()} flag" in EMOJI_CITY:
-                city['emoji'] = EMOJI_CITY[f"{city['countryEn'].lower()} flag"]
+            # if f"{city['countryEn'].lower()} flag" in EMOJI_CITY:
+            #     city['emoji'] = EMOJI_CITY[f"{city['countryEn'].lower()} flag"]
 
-            if 'priority' not in city:
-                count = 0
-                for client in clients:
-                    places_count = list(client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
-                        {
-                            '$match': {'location': {'$in': [city['_id']]}}
-                        }, {
-                            '$count': 'atracciones'
-                        }
-                    ]))
+            # if 'priority' not in city:
+            #     count = 0
+            #     for client in clients:
+            #         places_count = list(client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
+            #             {
+            #                 '$match': {'location': {'$in': [city['_id']]}}
+            #             }, {
+            #                 '$count': 'atracciones'
+            #             }
+            #         ]))
 
-                    count += (0 if len(
-                        places_count) == 0 else places_count[0]['atracciones'])
+            #         count += (0 if len(
+            #             places_count) == 0 else places_count[0]['atracciones'])
 
-                city['numberActivitiesTotal'] = count
-                city['priority'] = self.get_priority(count)
+            #     city['numberActivitiesTotal'] = count
+            #     city['priority'] = self.get_priority(count)
 
-            if 'activitiesImg' not in city or len(city['activitiesImg']) < 3:
-                images = []
-                if city['numberActivities'] > 0:
+            # if 'activitiesImg' not in city or len(city['activitiesImg']) < 3:
+            #     images = []
+            #     if city['numberActivities'] > 0:
 
-                    places = list(client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
-                        {
-                            '$match': {
-                                'location': {'$in': [city['_id']]},
-                                'incomplete': False,
-                                'urlImg': {'$ne': None}
-                            }
-                        }, {
-                            '$sort': {'stars': -1, '_id': 1}
-                        }, {
-                            '$limit': 3
-                        }
-                    ]))
+            #         places = list(client[os.getenv('MONGODB_DBNAME_PLACES_COLLECTION_NAME')].aggregate([
+            #             {
+            #                 '$match': {
+            #                     'location': {'$in': [city['_id']]},
+            #                     'incomplete': False,
+            #                     'urlImg': {'$ne': None}
+            #                 }
+            #             }, {
+            #                 '$sort': {'stars': -1, '_id': 1}
+            #             }, {
+            #                 '$limit': 3
+            #             }
+            #         ]))
 
-                    for place in places:
-                        images.append(place['urlImg'])
+            #         for place in places:
+            #             images.append(place['urlImg'])
 
-                city['activitiesImg'] = images
+            #     city['activitiesImg'] = images
 
-            if 'autoCompleteSelector' not in city:
-                autoCompleteSelectorArray = []
-                if 'city' in city and city['city'] is not None:
-                    autoCompleteSelectorArray.append(city['city'])
-                if 'country' in city and city['country'] is not None:
-                    autoCompleteSelectorArray.append(city['country'])
-                if 'cityEn' in city and city['cityEn'] is not None:
-                    autoCompleteSelectorArray.append(city['cityEn'])
-                if 'countryEn' in city and city['countryEn'] is not None:
-                    autoCompleteSelectorArray.append(city['countryEn'])
+            # if 'autoCompleteSelector' not in city:
+            #     autoCompleteSelectorArray = []
+            #     if 'city' in city and city['city'] is not None:
+            #         autoCompleteSelectorArray.append(city['city'])
+            #     if 'country' in city and city['country'] is not None:
+            #         autoCompleteSelectorArray.append(city['country'])
+            #     if 'cityEn' in city and city['cityEn'] is not None:
+            #         autoCompleteSelectorArray.append(city['cityEn'])
+            #     if 'countryEn' in city and city['countryEn'] is not None:
+            #         autoCompleteSelectorArray.append(city['countryEn'])
 
-                city['autoCompleteSelector'] = " ".join(
-                    autoCompleteSelectorArray).lower()
+            #     city['autoCompleteSelector'] = " ".join(
+            #         autoCompleteSelectorArray).lower()
 
             for client in clients:
                 client[os.getenv('MONGODB_DBNAME_CIUDADES_COLLECTION_NAME')].replace_one(
